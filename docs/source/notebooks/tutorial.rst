@@ -41,7 +41,7 @@ Inspecting the data
 
 .. parsed-literal::
 
-    <matplotlib.colorbar.Colorbar at 0x7fe84ca42df0>
+    <matplotlib.colorbar.Colorbar at 0x7f24dca7cf10>
 
 
 
@@ -63,7 +63,7 @@ Calculation of the focal mean:
 
 .. parsed-literal::
 
-    <matplotlib.image.AxesImage at 0x7fe84b0f6e50>
+    <matplotlib.image.AxesImage at 0x7f24d30c7e50>
 
 
 
@@ -84,7 +84,7 @@ smoothing
 
 .. parsed-literal::
 
-    <matplotlib.image.AxesImage at 0x7fe84b070280>
+    <matplotlib.image.AxesImage at 0x7f24d3041280>
 
 
 
@@ -105,7 +105,7 @@ based on this window_size.
 
 .. parsed-literal::
 
-    <matplotlib.image.AxesImage at 0x7fe84b0595b0>
+    <matplotlib.image.AxesImage at 0x7f24d302a5b0>
 
 
 
