@@ -41,7 +41,7 @@ Inspecting the data
 
 .. parsed-literal::
 
-    <matplotlib.colorbar.Colorbar at 0x7fd23b1d6eb0>
+    <matplotlib.colorbar.Colorbar at 0x7f099f322d90>
 
 
 
@@ -109,7 +109,7 @@ close to the original raster, with some limited smoothing
 
 .. parsed-literal::
 
-    <matplotlib.colorbar.Colorbar at 0x7fd2317d4280>
+    <matplotlib.colorbar.Colorbar at 0x7f099d98b0d0>
 
 
 
@@ -137,7 +137,7 @@ Resulting in the same image:
 
 .. parsed-literal::
 
-    <matplotlib.colorbar.Colorbar at 0x7fd23171e3d0>
+    <matplotlib.colorbar.Colorbar at 0x7f099d8d4340>
 
 
 
