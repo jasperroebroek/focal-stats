@@ -1,0 +1,9 @@
+numpy
+cython
+sphinx
+sphinx_rtd_theme
+numpydoc
+scipy
+jupyter
+rasterio
+matplotlib
