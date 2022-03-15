@@ -47,37 +47,38 @@ cdef double[:, ::1] _focal_std(double[:, ::1] a,
     with gil:
         r = np.full(ip.shape, np.nan, dtype=np.float64)
 
-    for y in range(ip.iter[0]):
-        for x in range(ip.iter[1]):
-            i = y * ip.step[0]
-            j = x * ip.step[1]
+    with nogil:
+        for y in range(ip.iter[0]):
+            for x in range(ip.iter[1]):
+                i = y * ip.step[0]
+                j = x * ip.step[1]
 
-            if not reduce:
-                if isnan(a[i + ip.fringe[0], j + ip.fringe[1]]):
-                    continue
+                if not reduce:
+                    if isnan(a[i + ip.fringe[0], j + ip.fringe[1]]):
+                        continue
 
-            a_sum = 0
-            count_values = 0
-
-            for p in range(window_size[0]):
-                for q in range(window_size[1]):
-                    if not isnan(a[i + p, j + q]) and mask[p, q]:
-                        a_sum = a_sum + a[i + p, j + q]
-                        count_values = count_values + 1
-
-            if count_values < ip.threshold:
-                pass
-
-            else:
-                a_mean = a_sum / count_values
-                x_sum = 0
+                a_sum = 0
+                count_values = 0
 
                 for p in range(window_size[0]):
                     for q in range(window_size[1]):
                         if not isnan(a[i + p, j + q]) and mask[p, q]:
-                            x_sum = x_sum + (a[i + p, j + q] - a_mean) ** 2
+                            a_sum = a_sum + a[i + p, j + q]
+                            count_values = count_values + 1
 
-                r[y + ip.fringe[0], x + ip.fringe[1]] = sqrt(x_sum / (count_values - dof))
+                if count_values < ip.threshold:
+                    pass
+
+                else:
+                    a_mean = a_sum / count_values
+                    x_sum = 0
+
+                    for p in range(window_size[0]):
+                        for q in range(window_size[1]):
+                            if not isnan(a[i + p, j + q]) and mask[p, q]:
+                                x_sum = x_sum + (a[i + p, j + q] - a_mean) ** 2
+
+                    r[y + ip.fringe[0], x + ip.fringe[1]] = sqrt(x_sum / (count_values - dof))
 
     free(ip)
     return r
@@ -107,29 +108,30 @@ cdef double[:, ::1] _focal_sum(double[:, ::1] a,
     with gil:
         r = np.full(ip.shape, np.nan, dtype=np.float64)
 
-    for y in range(ip.iter[0]):
-        for x in range(ip.iter[1]):
-            i = y * ip.step[0]
-            j = x * ip.step[1]
+    with nogil:
+        for y in range(ip.iter[0]):
+            for x in range(ip.iter[1]):
+                i = y * ip.step[0]
+                j = x * ip.step[1]
 
-            if not reduce:
-                if isnan(a[i + ip.fringe[0], j + ip.fringe[1]]):
-                    continue
+                if not reduce:
+                    if isnan(a[i + ip.fringe[0], j + ip.fringe[1]]):
+                        continue
 
-            a_sum = 0
-            count_values = 0
+                a_sum = 0
+                count_values = 0
 
-            for p in range(window_size[0]):
-                for q in range(window_size[1]):
-                    if not isnan(a[i + p, j + q]) and mask[p, q]:
-                        a_sum = a_sum + a[i + p, j + q]
-                        count_values = count_values + 1
+                for p in range(window_size[0]):
+                    for q in range(window_size[1]):
+                        if not isnan(a[i + p, j + q]) and mask[p, q]:
+                            a_sum = a_sum + a[i + p, j + q]
+                            count_values = count_values + 1
 
-            if count_values < ip.threshold:
-                pass
+                if count_values < ip.threshold:
+                    pass
 
-            else:
-                r[y + ip.fringe[0], x + ip.fringe[1]] = a_sum
+                else:
+                    r[y + ip.fringe[0], x + ip.fringe[1]] = a_sum
 
     free(ip)
     return r
@@ -159,30 +161,31 @@ cdef double[:, ::1] _focal_min(double[:, ::1] a,
     with gil:
         r = np.full(ip.shape, np.nan, dtype=np.float64)
 
-    for y in range(ip.iter[0]):
-        for x in range(ip.iter[1]):
-            i = y * ip.step[0]
-            j = x * ip.step[1]
+    with nogil:
+        for y in range(ip.iter[0]):
+            for x in range(ip.iter[1]):
+                i = y * ip.step[0]
+                j = x * ip.step[1]
 
-            if not reduce:
-                if isnan(a[i + ip.fringe[0], j + ip.fringe[1]]):
-                    continue
+                if not reduce:
+                    if isnan(a[i + ip.fringe[0], j + ip.fringe[1]]):
+                        continue
 
-            curr_min = 0
-            count_values = 0
+                curr_min = 0
+                count_values = 0
 
-            for p in range(window_size[0]):
-                for q in range(window_size[1]):
-                    if not isnan(a[i + p, j + q]) and mask[p, q]:
-                        if a[i + p, j + q] < curr_min or count_values == 0:
-                            curr_min = a[i + p, j + q]
-                        count_values = count_values + 1
+                for p in range(window_size[0]):
+                    for q in range(window_size[1]):
+                        if not isnan(a[i + p, j + q]) and mask[p, q]:
+                            if a[i + p, j + q] < curr_min or count_values == 0:
+                                curr_min = a[i + p, j + q]
+                            count_values = count_values + 1
 
-            if count_values < ip.threshold:
-                pass
+                if count_values < ip.threshold:
+                    pass
 
-            else:
-                r[y + ip.fringe[0], x + ip.fringe[1]] = curr_min
+                else:
+                    r[y + ip.fringe[0], x + ip.fringe[1]] = curr_min
 
     free(ip)
     return r
@@ -212,30 +215,31 @@ cdef double[:, ::1] _focal_max(double[:, ::1] a,
     with gil:
         r = np.full(ip.shape, np.nan, dtype=np.float64)
 
-    for y in range(ip.iter[0]):
-        for x in range(ip.iter[1]):
-            i = y * ip.step[0]
-            j = x * ip.step[1]
+    with nogil:
+        for y in range(ip.iter[0]):
+            for x in range(ip.iter[1]):
+                i = y * ip.step[0]
+                j = x * ip.step[1]
 
-            if not reduce:
-                if isnan(a[i + ip.fringe[0], j + ip.fringe[1]]):
-                    continue
+                if not reduce:
+                    if isnan(a[i + ip.fringe[0], j + ip.fringe[1]]):
+                        continue
 
-            curr_max = 0
-            count_values = 0
+                curr_max = 0
+                count_values = 0
 
-            for p in range(window_size[0]):
-                for q in range(window_size[1]):
-                    if not isnan(a[i + p, j + q]) and mask[p, q]:
-                        if a[i + p, j + q] > curr_max or count_values == 0:
-                            curr_max = a[i + p, j + q]
-                        count_values = count_values + 1
+                for p in range(window_size[0]):
+                    for q in range(window_size[1]):
+                        if not isnan(a[i + p, j + q]) and mask[p, q]:
+                            if a[i + p, j + q] > curr_max or count_values == 0:
+                                curr_max = a[i + p, j + q]
+                            count_values = count_values + 1
 
-            if count_values < ip.threshold:
-                pass
+                if count_values < ip.threshold:
+                    pass
 
-            else:
-                r[y + ip.fringe[0], x + ip.fringe[1]] = curr_max
+                else:
+                    r[y + ip.fringe[0], x + ip.fringe[1]] = curr_max
 
     free(ip)
     return r
@@ -272,73 +276,74 @@ cdef double[:, ::1] _focal_majority(double[:, ::1] a,
         counts = np.zeros(ip.num_values, dtype=np.intp)
         r = np.full(ip.shape, np.nan, dtype=np.float64)
 
-    for y in range(ip.iter[0]):
-        for x in range(ip.iter[1]):
-            i = y * ip.step[0]
-            j = x * ip.step[1]
+    with nogil:
+        for y in range(ip.iter[0]):
+            for x in range(ip.iter[1]):
+                i = y * ip.step[0]
+                j = x * ip.step[1]
 
-            if not reduce:
-                if isnan(a[i + ip.fringe[0], j + ip.fringe[1]]):
-                    continue
+                if not reduce:
+                    if isnan(a[i + ip.fringe[0], j + ip.fringe[1]]):
+                        continue
 
-            values[0] = 0
-            counts[0] = 0
-            count_values = 0
-            c = 1
+                values[0] = 0
+                counts[0] = 0
+                count_values = 0
+                c = 1
 
-            for p in range(window_size[0]):
-                for q in range(window_size[1]):
-                    if not isnan(a[i + p, j + q]) and mask[p, q]:
-                        in_store = False
-                        if count_values == 0:
-                            values[0] = a[i + p, j + q]
-                        for v in range(c):
-                            if a[i + p, j + q] == values[v]:
-                                counts[v] = counts[v] + 1
-                                in_store = True
-                        if not in_store:
-                            values[c] = a[i + p, j + q]
-                            counts[c] = 1
-                            c = c + 1
+                for p in range(window_size[0]):
+                    for q in range(window_size[1]):
+                        if not isnan(a[i + p, j + q]) and mask[p, q]:
+                            in_store = False
+                            if count_values == 0:
+                                values[0] = a[i + p, j + q]
+                            for v in range(c):
+                                if a[i + p, j + q] == values[v]:
+                                    counts[v] = counts[v] + 1
+                                    in_store = True
+                            if not in_store:
+                                values[c] = a[i + p, j + q]
+                                counts[c] = 1
+                                c = c + 1
 
-                        count_values = count_values + 1
+                            count_values = count_values + 1
 
-            if count_values < ip.threshold:
-                pass
+                if count_values < ip.threshold:
+                    pass
 
-            else:
-                if mode == MajorityMode.ascending:
-                    curr_max_count = 0
-                    curr_value = NAN
-                    for v in range(c):
-                        if counts[v] > curr_max_count:
-                            curr_max_count = counts[v]
-                            curr_value = values[v]
-
-                if mode == MajorityMode.descending:
-                    curr_max_count = 0
-                    curr_value = NAN
-                    for v in range(c):
-                        if counts[v] >= curr_max_count:
-                            curr_max_count = counts[v]
-                            curr_value = values[v]
-
-                if mode == MajorityMode.nan:
-                    curr_max_count = 0
-                    curr_value = NAN
-                    is_double = False
-                    for v in range(c):
-                        if counts[v] == curr_max_count:
-                            is_double = True
-                        if counts[v] > curr_max_count:
-                            curr_max_count = counts[v]
-                            curr_value = values[v]
-                            is_double = False
-
-                    if is_double:
+                else:
+                    if mode == MajorityMode.ascending:
+                        curr_max_count = 0
                         curr_value = NAN
+                        for v in range(c):
+                            if counts[v] > curr_max_count:
+                                curr_max_count = counts[v]
+                                curr_value = values[v]
 
-                r[y + ip.fringe[0], x + ip.fringe[1]] = curr_value
+                    if mode == MajorityMode.descending:
+                        curr_max_count = 0
+                        curr_value = NAN
+                        for v in range(c):
+                            if counts[v] >= curr_max_count:
+                                curr_max_count = counts[v]
+                                curr_value = values[v]
+
+                    if mode == MajorityMode.nan:
+                        curr_max_count = 0
+                        curr_value = NAN
+                        is_double = False
+                        for v in range(c):
+                            if counts[v] == curr_max_count:
+                                is_double = True
+                            if counts[v] > curr_max_count:
+                                curr_max_count = counts[v]
+                                curr_value = values[v]
+                                is_double = False
+
+                        if is_double:
+                            curr_value = NAN
+
+                    r[y + ip.fringe[0], x + ip.fringe[1]] = curr_value
 
     free(ip)
     return r

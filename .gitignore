@@ -2,6 +2,8 @@
 build
 .pytest_cache
 .idea
+todo
+.DS_Store
 *__pycache__
 
 *.c

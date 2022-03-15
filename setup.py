@@ -23,7 +23,7 @@ setup(
     include_dirs=[numpy.get_include()],
     install_requires=['numpy'],
     extras_require={
-        'develop': ['cython', 'sphinx', 'sphinx_rtd_theme', 'numpydoc', 'scipy', 'jupyter', 'rasterio', 'matplotlib'],
-        'test': ['scipy']
+        'develop': ['cython', 'sphinx', 'sphinx_rtd_theme', 'numpydoc', 'scipy', 'jupyter', 'rasterio', 'matplotlib', 'pytest'],
+        'test': ['scipy', 'pytest']
     }
 )
