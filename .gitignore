@@ -4,6 +4,7 @@ build
 .idea
 todo
 .DS_Store
+dist
 *__pycache__
 
 *.c
