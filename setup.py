@@ -29,7 +29,7 @@ setup(
     ext_modules=cythonize(extensions),
     include_dirs=[numpy.get_include()],
     setup_requires=['cython', 'numpy', 'setuptools'],
-    install_requires=['numpy', 'cython'],
+    install_requires=['numpy'],
     extras_require={
         'develop': ['cython', 'sphinx', 'sphinx_rtd_theme', 'numpydoc', 'scipy', 'jupyter', 'rasterio', 'matplotlib',
                     'pytest', 'joblib'],
