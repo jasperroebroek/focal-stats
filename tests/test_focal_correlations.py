@@ -226,12 +226,12 @@ def test_nan_behaviour():
 
 
 def test_correlation_dtype():
-    a = np.random.rand(5, 5).astype(np.int)
-    b = np.random.rand(5, 5).astype(np.int)
+    a = np.random.rand(5, 5).astype(np.int32)
+    b = np.random.rand(5, 5).astype(np.int32)
     assert focal_correlation(a, b).dtype == np.float64
 
-    a = np.random.rand(5, 5).astype(np.float)
-    b = np.random.rand(5, 5).astype(np.float)
+    a = np.random.rand(5, 5).astype(np.float64)
+    b = np.random.rand(5, 5).astype(np.float64)
     assert focal_correlation(a, b).dtype == np.float64
 
 

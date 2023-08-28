@@ -7,11 +7,25 @@ dimensions) or a list, which is analogous to `sliding_window_view`. A mask can b
 a window, which can have different shapes than rectangular. The `reduce` parameter results in non-overlapping windows,
 stacking side by side.
 """
+from typing import Optional, Tuple, Union, Iterable
+
 import numpy as np
 from numpy.lib.stride_tricks import as_strided
 
 
-def _parse_window_and_mask(a, window_size, mask, reduce):
+def _parse_window_and_mask(a: np.ndarray,
+                           window_size: Optional[Union[int, Iterable[int]]],
+                           mask: Optional[Iterable[bool]],
+                           reduce: bool) -> Tuple[np.ndarray, Optional[np.ndarray]]:
+    """Parses window size and mask.
+
+    Mask takes the upper hand when not None, in which case window_size is overridden by the shape of the mask.
+    If mask is not provided, also the output of this function will be None.
+
+    Returns
+    -------
+    window_size, mask
+    """
     if mask is None:
         if window_size is None:
             raise ValueError("Neither window_size nor mask is set")
@@ -43,7 +57,12 @@ def _parse_window_and_mask(a, window_size, mask, reduce):
     return window_size, mask
 
 
-def rolling_window(a, *, window_size=None, mask=None, flatten=False, reduce=False, **kwargs):
+def rolling_window(a: np.ndarray, *,
+                   window_size: Optional[Union[int, Iterable[int]]] = None,
+                   mask: Optional[Iterable[bool]] = None,
+                   flatten: bool = False,
+                   reduce: bool = False,
+                   **kwargs) -> np.ndarray:
     """
     Takes an array and returns a windowed version
     
@@ -53,7 +72,7 @@ def rolling_window(a, *, window_size=None, mask=None, flatten=False, reduce=Fals
         Input array
     window_size : int, array_like, optional
         Size of the window that is applied over ``a``. Should be a positive integer. If it is an integer it will be
-        interpreted as ``(window_size, ) * a.ndim``. If a list is provided it needs to have the same length as the
+        interpreted as ``(window_size, ) * a.ndim``. If an iterable is provided it needs to have the same length as the
         number of dimensions as a.
     mask : array_like, optional
         A boolean array. Its shape will be used as ``window_size``, and its entries are used to mask every window,
@@ -98,7 +117,7 @@ def rolling_window(a, *, window_size=None, mask=None, flatten=False, reduce=Fals
     a = np.asarray(a)
 
     if not isinstance(flatten, bool):
-        raise TypeError("flatten needs to be a boolean variable")
+        raise TypeError("'flatten' needs to be a boolean variable")
     if not isinstance(reduce, bool):
         raise TypeError("'reduce' needs to be a boolean variable")
 
@@ -119,14 +138,19 @@ def rolling_window(a, *, window_size=None, mask=None, flatten=False, reduce=Fals
     strided_a = as_strided(a, shape=output_shape, strides=output_strides, **kwargs)
 
     if mask is not None:
-        strided_a = strided_a[..., mask]
-    elif flatten:
-        strided_a = strided_a.reshape(strided_a.shape[:a.ndim] + (-1,))
+        return strided_a[..., mask]
+
+    if flatten:
+        return strided_a.reshape(strided_a.shape[:a.ndim] + (-1,))
 
     return strided_a
 
 
-def rolling_mean(a, *, window_size=None, mask=None, reduce=False):
+def rolling_mean(a,
+                 *,
+                 window_size: Optional[Union[int, Iterable[int]]] = None,
+                 mask: Optional[Iterable[bool]] = None,
+                 reduce: bool = False) -> np.ndarray:
     """
     Takes an array and returns the rolling mean. Not suitable for arrays with NaN values.
     
@@ -136,7 +160,7 @@ def rolling_mean(a, *, window_size=None, mask=None, reduce=False):
         Input array
     window_size : int, array_like, optional
         Size of the window that is applied over ``a``. Should be a positive integer. If it is an integer it will be
-        interpreted as ``(window_size, ) * a.ndim``. If a list is provided it needs to have the same length as the
+        interpreted as ``(window_size, ) * a.ndim``. If an iterable is provided it needs to have the same length as the
         number of dimensions as a.
     mask : array_like, optional
         A boolean array. Its shape will be used as ``window_size``, and its entries are used to mask every window,
@@ -153,6 +177,7 @@ def rolling_mean(a, *, window_size=None, mask=None, reduce=False):
         documentation. If a mask is provided, the last dimension has the length of the sum of ``mask``.
     """
     window_size, mask = _parse_window_and_mask(a, window_size, mask, reduce)
+
     if mask is None:
         div = np.prod(window_size)
     else:
@@ -161,7 +186,11 @@ def rolling_mean(a, *, window_size=None, mask=None, reduce=False):
     return rolling_sum(a, window_size=window_size, mask=mask, reduce=reduce) / div
 
 
-def rolling_sum(a, *, window_size=None, mask=None, reduce=False):
+def rolling_sum(a,
+                *,
+                window_size: Optional[Union[int, Iterable[int]]] = None,
+                mask: Optional[Iterable[bool]] = None,
+                reduce: bool = False) -> np.ndarray:
     """
     Takes an array and returns the rolling sum. Not suitable for arrays with NaN values.
 
@@ -171,7 +200,7 @@ def rolling_sum(a, *, window_size=None, mask=None, reduce=False):
         Input array
     window_size : int, array_like, optional
         Size of the window that is applied over ``a``. Should be a positive integer. If it is an integer it will be
-        interpreted as ``(window_size, ) * a.ndim``. If a list is provided it needs to have the same length as the
+        interpreted as ``(window_size, ) * a.ndim``. If an iterable is provided it needs to have the same length as the
         number of dimensions as a.
     mask : array_like, optional
         A boolean array. Its shape will be used as ``window_size``, and its entries are used to mask every window,
@@ -199,32 +228,31 @@ def rolling_sum(a, *, window_size=None, mask=None, reduce=False):
 
         return rolling_window(a, window_size=window_size, reduce=reduce, mask=mask).sum(axis=axis)
 
+    if np.issubdtype(a.dtype, np.bool_):
+        dtype = np.intp
     else:
-        if np.issubdtype(a.dtype, np.bool_):
-            dtype = np.int
+        dtype = a.dtype
+
+    shape = np.asarray(a.shape)
+    r = np.zeros(shape + 1, dtype=dtype)
+    r[(slice(1, None),) * a.ndim] = a
+
+    for i in range(a.ndim):
+        if window_size[i] == 1:
+            continue
         else:
-            dtype = a.dtype
+            ind1 = [slice(None)] * a.ndim
+            ind1[i] = slice(window_size[i], None)
+            ind1 = tuple(ind1)
+            ind2 = [slice(None)] * a.ndim
+            ind2[i] = slice(None, -window_size[i])
+            ind2 = tuple(ind2)
 
-        shape = np.asarray(a.shape)
-        r = np.zeros(shape + 1, dtype=dtype)
-        r[(slice(1, None),) * a.ndim] = a
+            np.cumsum(r, axis=i, out=r)
+            r[ind1] = r[ind1] - r[ind2]
 
-        for i in range(a.ndim):
-            if window_size[i] == 1:
-                continue
-            else:
-                ind1 = [slice(None)] * a.ndim
-                ind1[i] = slice(window_size[i], None)
-                ind1 = tuple(ind1)
-                ind2 = [slice(None)] * a.ndim
-                ind2[i] = slice(None, -window_size[i])
-                ind2 = tuple(ind2)
+    s = ()
+    for i in range(a.ndim):
+        s = s + (slice(window_size[i], None),)
 
-                np.cumsum(r, axis=i, out=r)
-                r[ind1] = r[ind1] - r[ind2]
-
-        s = ()
-        for i in range(a.ndim):
-            s = s + (slice(window_size[i], None),)
-
-        return r[s]
+    return r[s]

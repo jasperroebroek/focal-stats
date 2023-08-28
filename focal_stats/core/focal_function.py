@@ -1,46 +1,10 @@
-from collections import namedtuple
-from typing import Tuple, List, Callable, NamedTuple, Generator, Dict
+from typing import Callable, Dict
 
 import numpy as np
 from joblib import Parallel, delayed
-from rasterio.windows import Window
 
-WindowPair = namedtuple("WindowPair", ['input', 'output'])
-WindowFunction = Callable[[List[np.ndarray]], List[float]]
-
-
-def construct_windows(x: int, y: int, window_size: int, fringe: int, step: int) -> Generator[Window, None, None]:
-    return (Window(x_idx, y_idx, window_size, window_size)
-            for y_idx in range(fringe, y - window_size - fringe + 1, step)
-            for x_idx in range(fringe, x - window_size - fringe + 1, step))
-
-
-def define_windows(shape: Tuple[int, int], window_size: int, reduce: bool = False) -> Generator[NamedTuple, None, None]:
-    """define slices for input and output data for windowed calculations"""
-    if window_size < 1:
-        raise ValueError("Window needs to have at least size 1")
-
-    y, x = shape
-
-    if not y >= window_size:
-        raise ValueError("Window needs to be smaller than the shape Y")
-    if not x >= window_size:
-        raise ValueError("Window needs to be smaller than the shape X")
-
-    if reduce:
-        if y % window_size > 0:
-            raise ValueError("Shape Y not divisible by window_size")
-        if x % window_size > 0:
-            raise ValueError("Shape X not divisible by window_size")
-
-    if reduce:
-        input_windows = construct_windows(x, y, window_size=window_size, fringe=0, step=window_size)
-        output_windows = construct_windows(x // window_size, y // window_size, window_size=1, fringe=0, step=1)
-    else:
-        input_windows = construct_windows(x, y, window_size=window_size, fringe=0, step=1)
-        output_windows = construct_windows(x, y, window_size=1, fringe=window_size // 2, step=1)
-
-    return (WindowPair(iw, ow) for iw, ow in zip(input_windows, output_windows))
+from focal_stats.core.utils import timeit
+from focal_stats.windows import define_windows, WindowPair
 
 
 def process_window(fn: Callable,
@@ -49,6 +13,7 @@ def process_window(fn: Callable,
                    windows: WindowPair,
                    **kwargs) -> None:
     input_slices = windows.input.toslices()
+    print({key: inputs[key][..., input_slices[0], input_slices[1]] for key in inputs})
     result = fn(**{key: inputs[key][..., input_slices[0], input_slices[1]] for key in inputs}, **kwargs)
 
     for key in outputs:
@@ -56,6 +21,7 @@ def process_window(fn: Callable,
         outputs[key][..., output_slices[0], output_slices[1]] = result[key]
 
 
+@timeit
 def focal_function(fn: Callable,
                    inputs: Dict[str, np.ndarray],
                    outputs: Dict[str, np.ndarray],
@@ -65,6 +31,7 @@ def focal_function(fn: Callable,
                    n_jobs: int = 1,
                    verbose: bool = False,
                    prefer: str = 'threads',
+                   # kwargs go to fn
                    **kwargs) -> None:
     """Focal statistics with an arbitrary function. prefer 'threads' always works, 'processes' only works with memmaps,
     but provides potentially large speed-ups"""

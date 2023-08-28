@@ -10,5 +10,4 @@ __all__ = ["rolling_window",
            "focal_majority",
            "focal_std",
            "focal_sum",
-           "focal_statistics",
            "focal_correlation"]

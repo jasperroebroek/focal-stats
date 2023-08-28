@@ -10,8 +10,8 @@ def read_file(filename):
         return file.read()
 
 
-extensions = [Extension("focal_stats.core.utils",
-                        ["focal_stats/core/utils.pyx"]),
+extensions = [Extension("focal_stats.core.iteration_params",
+                        ["focal_stats/core/iteration_params.pyx"]),
               Extension("focal_stats.core.focal_correlation",
                         ["focal_stats/core/focal_correlation.pyx"]),
               Extension("focal_stats.core.focal_statistics",
@@ -20,7 +20,7 @@ extensions = [Extension("focal_stats.core.utils",
 
 setup(
     name='focal_stats',
-    version='0.0.3',
+    version='0.0.4',
     packages=find_packages(),
     url='',
     license='MIT',
@@ -29,11 +29,11 @@ setup(
     ext_modules=cythonize(extensions),
     include_dirs=[numpy.get_include()],
     setup_requires=['cython', 'numpy', 'setuptools'],
-    install_requires=['numpy'],
+    install_requires=['numpy', 'cython'],
     extras_require={
         'develop': ['cython', 'sphinx', 'sphinx_rtd_theme', 'numpydoc', 'scipy', 'jupyter', 'rasterio', 'matplotlib',
                     'pytest', 'joblib'],
-        'test': ['scipy', 'pytest']},
+        'test': ['scipy', 'pytest', 'rasterio']},
     long_description=read_file('README.md'),
     long_description_content_type='text/markdown',
 )

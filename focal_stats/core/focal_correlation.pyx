@@ -4,12 +4,14 @@
 """
 Algorithm to correlate two arrays (2D) with each other
 """
+from focal_stats.core.utils import verify_keywords, timeit
 from focal_stats.rolling import rolling_sum, rolling_window, _parse_window_and_mask
+
+from focal_stats.core.iteration_params cimport _define_iter_params
 
 import time
 import numpy as np
 
-from .utils cimport _define_iter_params
 
 cimport numpy as np
 from libc.stdlib cimport free
@@ -111,12 +113,6 @@ def _correlate_maps_input_checks(a, b, window_size, fraction_accepted, reduce, v
     """
     Input checks for correlate_maps. Check their docstring for input requirements.
     """
-    if not isinstance(verbose, bool):
-        raise TypeError("verbose is a boolean variable")
-
-    if not isinstance(reduce, bool):
-        raise TypeError("reduce is a boolean variable")
-
     if a.ndim != 2:
         raise IndexError("Only two dimensional arrays are supported")
     if b.ndim != 2:
@@ -124,8 +120,6 @@ def _correlate_maps_input_checks(a, b, window_size, fraction_accepted, reduce, v
     if a.shape != b.shape:
         raise IndexError(f"Different shapes: {a.shape}, {b.shape}")
 
-    if not isinstance(window_size, int):
-        raise TypeError("window_size should be an integer")
     elif window_size < 2:
         raise ValueError("window_size should be uneven and bigger than or equal to 2")
 
@@ -140,12 +134,9 @@ def _correlate_maps_input_checks(a, b, window_size, fraction_accepted, reduce, v
         if window_size % 2 == 0:
             raise ValueError("window_size should be uneven if reduce is set to False")
 
-    if not isinstance(fraction_accepted, (int, float)):
-        raise TypeError("fraction_accepted should be numeric")
-    elif fraction_accepted < 0 or fraction_accepted > 1:
-        raise ValueError("fraction_accepted should be between 0 and 1")
 
-
+@timeit
+@verify_keywords
 def focal_correlation(a, b, *, window_size=5, mask=None, fraction_accepted=0.7, reduce=False, verbose=False):
     """
     Focal correlation
@@ -188,12 +179,10 @@ def focal_correlation(a, b, *, window_size=5, mask=None, fraction_accepted=0.7, 
     corr = _correlate_maps(a, b, window_size=window_size, mask=mask,
                            fraction_accepted=fraction_accepted, reduce=reduce)
 
-    if verbose:
-        print(f"- correlation: {time.perf_counter() - start}")
-
     return np.asarray(corr)
 
 
+@verify_keywords
 def focal_correlation_base(a, b, *, window_size=5, fraction_accepted=0.7, reduce=False, verbose=False):
     """
     Focal correlation
