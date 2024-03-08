@@ -20,7 +20,7 @@ extensions = [Extension("focal_stats.core.iteration_params",
 
 setup(
     name='focal_stats',
-    version='0.0.4',
+    version='0.0.6',
     packages=find_packages(),
     url='',
     license='MIT',
@@ -31,7 +31,7 @@ setup(
     setup_requires=['cython', 'numpy', 'setuptools'],
     install_requires=['numpy'],
     extras_require={
-        'develop': ['cython', 'sphinx', 'sphinx_rtd_theme', 'numpydoc', 'scipy', 'jupyter', 'rasterio', 'matplotlib',
+        'develop': ['cython', 'sphinx', 'sphinx_rtd_theme', 'numpydoc', 'scipy', 'jupyter', 'matplotlib',
                     'pytest', 'joblib'],
         'test': ['scipy', 'pytest', 'rasterio']},
     long_description=read_file('README.md'),

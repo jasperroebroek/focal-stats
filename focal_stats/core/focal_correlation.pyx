@@ -23,13 +23,13 @@ from libc.math cimport isnan, sqrt
 
 cdef double[:, ::1] _correlate_maps(double[:, ::1] a,
                                     double[:, ::1] b,
-                                    long[:] window_size,
+                                    int[:] window_size,
                                     np.npy_uint8[:, ::1] mask,
                                     double fraction_accepted,
                                     bint reduce,
-                                    ) nogil:
+                                    ):
     cdef:
-        long p, q, i, j, x, y
+        size_t p, q, i, j, x, y
         double[:, ::1] corr
         double r_num, d1_mean, d2_mean, d1_sum, d2_sum, c1_dist, c2_dist, r_den_d1, r_den_d2
         double num_values, threshold, count_values, first_value1, first_value2
@@ -43,9 +43,7 @@ cdef double[:, ::1] _correlate_maps(double[:, ::1] a,
     ws[1] = window_size[1]
 
     ip = _define_iter_params(shape, ws, fraction_accepted, reduce)
-
-    with gil:
-        corr = np.full(ip.shape, np.nan, dtype=np.float64)
+    corr = np.full(ip.shape, np.nan, dtype=np.float64)
 
     with nogil:
         for y in range(ip.iter[0]):

@@ -29,14 +29,14 @@ def _parse_window_and_mask(a: np.ndarray,
     if mask is None:
         if window_size is None:
             raise ValueError("Neither window_size nor mask is set")
-        window_size = np.asarray(window_size, dtype=np.intp).flatten()
+        window_size = np.asarray(window_size, dtype=np.int32).flatten()
         if window_size.size == 1:
             window_size = window_size.repeat(a.ndim)
         if np.all(window_size == 1):
             raise ValueError("Window_size can't only contain ones.")
     else:
         mask = np.asarray(mask, dtype=bool)
-        window_size = np.asarray(mask.shape)
+        window_size = np.asarray(mask.shape, dtype=np.int32)
 
     if window_size.size != a.ndim:
         raise IndexError("Length of window_size (or the mask that defines it) should either be the same length as the "
@@ -123,8 +123,8 @@ def rolling_window(a: np.ndarray, *,
 
     window_size, mask = _parse_window_and_mask(a, window_size, mask, reduce)
 
-    shape = np.array(a.shape)
-    strides = np.array(a.strides)
+    shape = np.asarray(a.shape)
+    strides = np.asarray(a.strides)
 
     if reduce:
         output_shape = np.r_[shape // window_size, window_size]
@@ -135,7 +135,7 @@ def rolling_window(a: np.ndarray, *,
         output_strides = np.r_[strides, strides]
 
     # create view on the data with new shape and strides
-    strided_a = as_strided(a, shape=output_shape, strides=output_strides, **kwargs)
+    strided_a = as_strided(a, shape=output_shape.astype(int), strides=output_strides.astype(int), **kwargs)
 
     if mask is not None:
         return strided_a[..., mask]

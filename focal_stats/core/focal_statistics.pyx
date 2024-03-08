@@ -19,25 +19,24 @@ cimport numpy as np
 from libc.math cimport isnan, sqrt, NAN
 from libc.stdlib cimport free
 
-# todo; propagate nans?
+
 
 cdef enum MajorityMode:
     ascending, descending, nan
 
 
 cdef double[:, ::1] _focal_std(double[:, ::1] a,
-                               long[:] window_size,
+                               int[:] window_size,
                                np.npy_uint8[:, ::1] mask,
                                double fraction_accepted,
                                bint reduce,
-                               long dof
-                               ) nogil:
+                               int dof
+                               ):
     cdef:
-        long p, q, i, j, x, y
+        size_t p, q, i, j, x, y, count_values
         double[:, ::1] r
         double a_sum, a_mean, x_sum
         double first_value1, first_value2
-        long count_values
         bint all_equal_d1, all_equal_d2
         size_t shape[2]
         size_t ws[2]
@@ -48,9 +47,7 @@ cdef double[:, ::1] _focal_std(double[:, ::1] a,
     ws[1] = window_size[1]
 
     ip = _define_iter_params(shape, ws, fraction_accepted, reduce)
-
-    with gil:
-        r = np.full(ip.shape, np.nan, dtype=np.float64)
+    r = np.full(ip.shape, np.nan, dtype=np.float64)
 
     with nogil:
         for y in range(ip.iter[0]):
@@ -90,16 +87,15 @@ cdef double[:, ::1] _focal_std(double[:, ::1] a,
 
 
 cdef double[:, ::1] _focal_sum(double[:, ::1] a,
-                               long[:] window_size,
+                               int[:] window_size,
                                np.npy_uint8[:, ::1] mask,
                                double fraction_accepted,
                                bint reduce,
-                               ) nogil:
+                               ):
     cdef:
-        long p, q, i, j, x, y
+        size_t p, q, i, j, x, y, count_values
         double[:, ::1] r
         double a_sum
-        long count_values
         size_t shape[2]
         size_t ws[2]
 
@@ -109,9 +105,7 @@ cdef double[:, ::1] _focal_sum(double[:, ::1] a,
     ws[1] = window_size[1]
 
     ip = _define_iter_params(shape, ws, fraction_accepted, reduce)
-
-    with gil:
-        r = np.full(ip.shape, np.nan, dtype=np.float64)
+    r = np.full(ip.shape, np.nan, dtype=np.float64)
 
     with nogil:
         for y in range(ip.iter[0]):
@@ -143,16 +137,15 @@ cdef double[:, ::1] _focal_sum(double[:, ::1] a,
 
 
 cdef double[:, ::1] _focal_min(double[:, ::1] a,
-                               long[:] window_size,
+                               int[:] window_size,
                                np.npy_uint8[:, ::1] mask,
                                double fraction_accepted,
                                bint reduce,
-                               ) nogil:
+                               ):
     cdef:
-        long p, q, i, j, x, y
+        size_t p, q, i, j, x, y, count_values
         double[:, ::1] r
         double curr_min
-        long count_values
         size_t shape[2]
         size_t ws[2]
 
@@ -162,9 +155,7 @@ cdef double[:, ::1] _focal_min(double[:, ::1] a,
     ws[1] = window_size[1]
 
     ip = _define_iter_params(shape, ws, fraction_accepted, reduce)
-
-    with gil:
-        r = np.full(ip.shape, np.nan, dtype=np.float64)
+    r = np.full(ip.shape, np.nan, dtype=np.float64)
 
     with nogil:
         for y in range(ip.iter[0]):
@@ -197,16 +188,15 @@ cdef double[:, ::1] _focal_min(double[:, ::1] a,
 
 
 cdef double[:, ::1] _focal_max(double[:, ::1] a,
-                               long[:] window_size,
+                               int[:] window_size,
                                np.npy_uint8[:, ::1] mask,
                                double fraction_accepted,
                                bint reduce,
-                               ) nogil:
+                               ):
     cdef:
-        long p, q, i, j, x, y
+        size_t p, q, i, j, x, y, count_values
         double[:, ::1] r
         double curr_max
-        long count_values
         size_t shape[2]
         size_t ws[2]
 
@@ -216,9 +206,7 @@ cdef double[:, ::1] _focal_max(double[:, ::1] a,
     ws[1] = window_size[1]
 
     ip = _define_iter_params(shape, ws, fraction_accepted, reduce)
-
-    with gil:
-        r = np.full(ip.shape, np.nan, dtype=np.float64)
+    r = np.full(ip.shape, np.nan, dtype=np.float64)
 
     with nogil:
         for y in range(ip.iter[0]):
@@ -251,23 +239,22 @@ cdef double[:, ::1] _focal_max(double[:, ::1] a,
 
 
 cdef double[:, ::1] _focal_majority(double[:, ::1] a,
-                                    long[:] window_size,
+                                    int[:] window_size,
                                     np.npy_uint8[:, ::1] mask,
                                     double fraction_accepted,
                                     bint reduce,
                                     MajorityMode mode
-                                    ) nogil:
+                                    ):
     cdef:
-        long p, q, i, j, x, y, v, c
+        size_t p, q, i, j, x, y, v, c, count_values
         double[:, ::1] r
         double curr_value
         size_t curr_max_count
-        long count_values
         size_t shape[2]
         size_t ws[2]
         bint in_store, is_double
         double[:] values
-        long[:] counts
+        int[:] counts
 
     shape[0] = a.shape[0]
     shape[1] = a.shape[1]
@@ -276,10 +263,9 @@ cdef double[:, ::1] _focal_majority(double[:, ::1] a,
 
     ip = _define_iter_params(shape, ws, fraction_accepted, reduce)
 
-    with gil:
-        values = np.full(ip.num_values, dtype=np.float64, fill_value=np.nan)
-        counts = np.zeros(ip.num_values, dtype=np.intp)
-        r = np.full(ip.shape, np.nan, dtype=np.float64)
+    values = np.full(ip.num_values, dtype=np.float64, fill_value=np.nan)
+    counts = np.zeros(ip.num_values, dtype=np.int32)
+    r = np.full(ip.shape, np.nan, dtype=np.float64)
 
     with nogil:
         for y in range(ip.iter[0]):
@@ -821,6 +807,7 @@ def focal_majority(a: Iterable,
             print("- Empty array")
         return _create_output_array(a_parsed, window_size_parsed, reduce)
 
+    print(a_parsed.dtype, window_size_parsed.dtype, mask_parsed.dtype)
     return np.asarray(
         _focal_majority(a_parsed, window_size_parsed, mask_parsed, fraction_accepted, reduce, c_mode)
     )
