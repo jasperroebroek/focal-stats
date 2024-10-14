@@ -1,7 +1,7 @@
 import pytest
 from rasterio.windows import Window
 
-from focal_stats.windows import define_windows, WindowPair
+from focal_stats.raster_windows import define_windows, WindowPair
 
 
 def test_window_definition_errors():

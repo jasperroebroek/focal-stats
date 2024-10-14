@@ -2,12 +2,7 @@ from focal_stats.focal_stats.focal_correlation import focal_correlation, focal_c
 from focal_stats.focal_stats.focal_statistics import focal_majority, focal_max, focal_mean, focal_min, focal_std, \
     focal_sum
 
-from focal_stats.rolling import rolling_mean, rolling_sum, rolling_window
-
 __all__ = [
-    "rolling_window",
-    "rolling_sum",
-    "rolling_mean",
     "focal_mean",
     "focal_max",
     "focal_min",

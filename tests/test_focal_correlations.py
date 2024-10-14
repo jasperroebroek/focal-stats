@@ -1,9 +1,12 @@
+from multiprocessing.managers import Value
+
 import numpy as np
-from scipy.stats import pearsonr
 import pytest
+from scipy.stats import pearsonr
+
 from focal_stats import focal_correlation
-from focal_stats.core import focal_correlation_base
-from focal_stats.rolling import _parse_window_and_mask
+from focal_stats.focal_stats import focal_correlation_base
+from focal_stats.window import define_window
 
 
 def overlapping_arrays(m, preserve_input=True):
@@ -55,10 +58,10 @@ def overlapping_arrays(m, preserve_input=True):
     return m
 
 
-def focal_correlation_simple(map1, map2, window_size=5, mask=None, fraction_accepted=0.7):
+def focal_correlation_simple(map1, map2, window=5, fraction_accepted=0.7):
     """
     Takes two maps and returning the local correlation between them with the same dimensions as the input maps.
-    Correlation calculated in a rolling window with the size `window_size`. If either of the input maps contains
+    Correlation calculated in a rolling window, with a Window object. If either of the input maps contains
     a NaN value on a location, the output map will also have a NaN on that location. This is a simplified version of
     correlate_maps() in raster_functions with the purpose of testing. It is super slow, so don't throw large maps
     at it.
@@ -67,10 +70,9 @@ def focal_correlation_simple(map1, map2, window_size=5, mask=None, fraction_acce
     ----------
     map1, map2 : array-like
         Input arrays that will be correlated. If not present in dtype `np.float64` it will be converted internally.
-    window_size : int, optional
-        Size of the window used for the correlation calculations. It should be bigger than 1, the default is 5.
-    mask : array_like, optional
-        A boolean array. Its shape will be used as window_size, and its entries are used to mask every window.
+    window : int, array_like, Window
+        Window that is applied over ``a``. It can be an integer or a sequence of integers, which will be interpreted as
+        a rectangular window, a mask or a Window object.
     fraction_accepted : float, optional
         Fraction of the window that has to contain not-nans for the function to calculate the correlation. The default
         is 0.7.
@@ -82,15 +84,17 @@ def focal_correlation_simple(map1, map2, window_size=5, mask=None, fraction_acce
 
     """
     map1, map2 = overlapping_arrays([map1, map2])
-    fringe = window_size // 2
-    corr = np.full(map1.shape, np.nan)
-    _, mask = _parse_window_and_mask(map1, window_size, mask, reduce=False)
-    if mask is None:
-        mask = np.full(window_size, dtype=np.bool_, fill_value=1)
+    window = define_window(window)
 
-    for i in range(fringe, map1.shape[0] - fringe):
-        for j in range(fringe, map1.shape[1] - fringe):
-            ind = np.s_[i - fringe:i + fringe + 1, j - fringe:j + fringe + 1]
+    mask = window.get_mask(2)
+    window_shape = np.asarray(window.get_shape(2), dtype=np.int32)
+
+    fringes = window_shape // 2
+    corr = np.full(map1.shape, np.nan)
+
+    for i in range(fringes[0], map1.shape[0] - fringes[0]):
+        for j in range(fringes[1], map1.shape[1] - fringes[1]):
+            ind = np.s_[i - fringes[0]:i + fringes[0] + 1, j - fringes[1]:j + fringes[1] + 1]
 
             if np.isnan(map1[i, j]) or np.isnan(map2[i, j]):
                 continue
@@ -118,46 +122,79 @@ def test_correlation_values():
     b = np.random.rand(5, 5)
 
     # Cython implementation
-    assert np.allclose(pearsonr(a.flatten(), b.flatten())[0],
-                       focal_correlation(a, b, window_size=5, reduce=True))
+    assert np.allclose(
+        pearsonr(a.flatten(), b.flatten())[0],
+        focal_correlation(a, b, window=5, reduce=True)
+    )
+
     # Numpy implementation
-    assert np.allclose(pearsonr(a.flatten(), b.flatten())[0],
-                       focal_correlation_base(a, b, window_size=5)[2, 2])
+    assert np.allclose(
+        pearsonr(a.flatten(), b.flatten())[0],
+        focal_correlation_base(a, b, window=5)[2, 2]
+    )
+
     # Local implementation
-    assert np.allclose(pearsonr(a.flatten(), b.flatten())[0],
-                       focal_correlation_simple(a, b, window_size=5)[2, 2])
+    assert np.allclose(
+        pearsonr(a.flatten(), b.flatten())[0],
+        focal_correlation_simple(a, b, window=5)[2, 2]
+    )
 
+
+def test_correlation_values_large():
     # compare for larger shape
-    a = np.random.rand(100, 100)
-    b = np.random.rand(100, 100)
+    a = np.random.rand(25, 25)
+    b = np.random.rand(25, 25)
 
-    assert np.allclose(focal_correlation(a, b), focal_correlation_simple(a, b), equal_nan=True)
-    assert np.allclose(focal_correlation_base(a, b), focal_correlation_simple(a, b), equal_nan=True)
+    assert np.allclose(
+        focal_correlation(a, b),
+        focal_correlation_simple(a, b),
+        equal_nan=True
+    )
+
+    assert np.allclose(
+        focal_correlation_base(a, b),
+        focal_correlation_simple(a, b),
+        equal_nan=True
+    )
 
 
 def test_correlation_values_mask():
-    a = np.random.rand(100, 100)
-    b = np.random.rand(100, 100)
-    mask = np.random.RandomState().rand(5, 5)
+    a = np.random.rand(15, 15)
+    b = np.random.rand(15, 15)
+    window = define_window(np.random.RandomState().rand(5, 5) > 0.5)
 
-    assert np.allclose(focal_correlation(a, b, mask=mask), focal_correlation_simple(a, b, window_size=5, mask=mask),
-                       equal_nan=True)
+    assert np.allclose(
+        focal_correlation(a, b, window=window, fraction_accepted=0),
+        focal_correlation_simple(a, b, window=window),
+        equal_nan=True
+    )
 
+
+def test_correlation_values_mask_reduce():
+    a = np.random.rand(5, 5)
+    b = np.random.rand(5, 5)
+    window = define_window(np.random.RandomState().rand(5, 5) > 0.5)
+
+    assert np.allclose(
+        focal_correlation(a, b, window=window, fraction_accepted=0, reduce=True),
+        focal_correlation_simple(a, b, window=window)[2, 2],
+        equal_nan=True
+    )
 
 def test_correlation_shape():
     a = np.random.rand(10, 10)
     b = np.random.rand(10, 10)
 
-    assert focal_correlation(a, b, window_size=3).shape == a.shape
-    assert focal_correlation(a, b, window_size=10, reduce=True).shape == (1, 1)
+    assert focal_correlation(a, b, window=3).shape == a.shape
+    assert focal_correlation(a, b, window=10, reduce=True).shape == (1, 1)
 
 
 def test_correlation_errors():
-    with pytest.raises(TypeError):
-        focal_correlation(np.random.rand(10, 10), np.random.rand(10, 10), window_size=5, verbose=1)
+    with pytest.raises(ValueError):
+        focal_correlation(np.random.rand(10, 10), np.random.rand(10, 10), window=5, verbose=2)
 
-    with pytest.raises(TypeError):
-        focal_correlation(np.random.rand(10, 10), np.random.rand(10, 10), window_size=5, reduce=1)
+    with pytest.raises(ValueError):
+        focal_correlation(np.random.rand(10, 10), np.random.rand(10, 10), window=5, reduce=2)
 
     # not 2D
     with pytest.raises(IndexError):
@@ -166,37 +203,37 @@ def test_correlation_errors():
         focal_correlation(a, b)
 
     # different shapes
-    with pytest.raises(IndexError):
+    with pytest.raises(ValueError):
         a = np.random.rand(10, 10)
         b = np.random.rand(10, 15)
         focal_correlation(a, b)
 
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         a = np.random.rand(10, 10)
         b = np.random.rand(10, 10)
-        focal_correlation(a, b, window_size="5")
+        focal_correlation(a, b, window="x")
 
     with pytest.raises(ValueError):
         a = np.random.rand(10, 10)
         b = np.random.rand(10, 10)
-        focal_correlation(a, b, window_size=1)
+        focal_correlation(a, b, window=1)
 
     with pytest.raises(ValueError):
         a = np.random.rand(10, 10)
         b = np.random.rand(10, 10)
-        focal_correlation(a, b, window_size=11)
+        focal_correlation(a, b, window=11)
 
     # uneven window_size is not supported
     with pytest.raises(ValueError):
         a = np.random.rand(10, 10)
         b = np.random.rand(10, 10)
-        focal_correlation(a, b, window_size=4)
+        focal_correlation(a, b, window=4)
 
     # Not exactly divided in reduce mode
     with pytest.raises((NotImplementedError, ValueError)):
         a = np.random.rand(10, 10)
         b = np.random.rand(10, 10)
-        focal_correlation(a, b, window_size=4, reduce=True)
+        focal_correlation(a, b, window=4, reduce=True)
 
     with pytest.raises(ValueError):
         a = np.random.rand(10, 10)
@@ -233,7 +270,6 @@ def test_correlation_dtype():
     a = np.random.rand(5, 5).astype(np.float64)
     b = np.random.rand(5, 5).astype(np.float64)
     assert focal_correlation(a, b).dtype == np.float64
-
 
 # def test_correlation_against_base():
 #     import rasterio as rio

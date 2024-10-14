@@ -1,0 +1,15 @@
+name: push
+
+on: 
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - README.md
+      - docs
+      - .readthedocs.yaml
+      - .gitignore
+
+jobs:
+  push:
+    uses: ./.github/workflows/build.yml  # use the callable tests job to run tests

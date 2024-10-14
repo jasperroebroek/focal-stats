@@ -8,3 +8,4 @@ scipy
 jupyter
 matplotlib
 joblib
+numpydantic

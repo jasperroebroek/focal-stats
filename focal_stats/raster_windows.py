@@ -1,8 +1,12 @@
 from collections import namedtuple
-from typing import Union, Tuple, Generator, NamedTuple, Callable, List
+from typing import Any, Callable, Generator, List, NamedTuple, Optional, Sequence, Tuple, Union
 
 import numpy as np
+from numpydantic.ndarray import NDArray
+from pydantic import validate_call
 from rasterio.windows import Window
+
+from focal_stats.types import PositiveInt
 
 # WindowFunction arguments correspond to keys in the `input` dictionary, and should return another dict with the keys
 # corresponding to the `output` dictionary of the `focal_function` function.
@@ -107,3 +111,43 @@ def define_tiles(shape: Tuple[int, int],
     output_windows = construct_tiles(output_shape, tile_size=output_tile_size, fringe=(0, 0))
 
     return (WindowPair(iw, ow) for iw, ow in zip(input_windows, output_windows))
+
+
+@validate_call
+def _parse_window_and_mask(a: NDArray,
+                           window_size: Optional[PositiveInt | Sequence[PositiveInt]],
+                           mask: Optional[NDArray[Any, bool]],
+                           reduce: bool) -> Tuple[List[PositiveInt], Optional[NDArray[Any, bool]]]:
+    """Parses window size and mask.
+
+    Mask takes the upper hand when not None, in which case window_size is overridden by the shape of the mask.
+    If mask is not provided, also the output of this function will be None.
+
+    Returns
+    -------
+    window_size, mask
+    """
+    if mask is None:
+        if window_size is None:
+            raise ValueError("Neither window_size nor mask is set")
+        window_size = np.asarray(window_size, dtype=np.int32).flatten()
+        if window_size.size == 1:
+            window_size = window_size.repeat(a.ndim)
+    else:
+        mask = np.asarray(mask, dtype=bool)
+        window_size = np.asarray(mask.shape, dtype=np.int32)
+
+    if window_size.size != a.ndim:
+        raise IndexError("Length of window_size (or the mask that defines it) should either be the same length as the "
+                         "shape of `a`, or it needs to be 1.")
+
+    shape = np.asarray(a.shape)
+
+    if np.any(np.array(a.shape) < window_size):
+        raise ValueError(f"Window bigger than input array: {shape}, {window_size}")
+
+    if reduce:
+        if not np.array_equal(shape // window_size, shape / window_size):
+            raise ValueError("not all dimensions are divisible by window_size")
+
+    return window_size.tolist(), mask

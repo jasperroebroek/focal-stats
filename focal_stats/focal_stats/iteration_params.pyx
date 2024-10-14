@@ -29,6 +29,6 @@ cdef IterParams* _define_iter_params(size_t[2] shape,
     ip.iter[0] = ip.stop[0] // ip.step[0]
     ip.iter[1] = ip.stop[1] // ip.step[1]
     ip.num_values = window_size[0] * window_size[1]
-    ip.threshold = fraction_accepted * ip.num_values
+    ip.threshold = fraction_accepted * ip.num_values + 1
 
     return ip

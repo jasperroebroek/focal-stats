@@ -4,7 +4,7 @@ from typing import Dict
 import numpy as np
 
 from focal_stats import focal_mean
-from focal_stats.core.focal_function import focal_function
+from focal_stats.focal_function import focal_function
 
 
 def mean_fun_t(x: np.ndarray, key: str) -> Dict[str, float]:
@@ -21,7 +21,7 @@ def test_focal_function():
     focal_function(mean_fun_t, inputs, outputs, window_size=5, reduce=True, key='y')
 
     # Check for equality
-    m = focal_mean(inputs['x'], fraction_accepted=0, window_size=5, reduce=True)
+    m = focal_mean(inputs['x'], fraction_accepted=0, window=5, reduce=True)
     np.allclose(m, outputs['y'], equal_nan=True)
 
 

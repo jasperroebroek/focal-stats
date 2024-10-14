@@ -1,8 +1,9 @@
-from setuptools import setup, find_packages
-from distutils.extension import Extension
-from Cython.Build import cythonize
-import numpy
 import os
+
+import numpy
+from Cython.Build import cythonize
+from distutils.extension import Extension
+from setuptools import find_packages, setup
 
 
 def read_file(filename):
@@ -10,17 +11,17 @@ def read_file(filename):
         return file.read()
 
 
-extensions = [Extension("focal_stats.core.iteration_params",
-                        ["focal_stats/core/iteration_params.pyx"]),
-              Extension("focal_stats.core.focal_correlation",
-                        ["focal_stats/core/focal_correlation.pyx"]),
-              Extension("focal_stats.core.focal_statistics",
-                        ["focal_stats/core/focal_statistics.pyx"])
+extensions = [Extension("focal_stats.focal_stats.iteration_params",
+                        ["focal_stats/focal_stats/iteration_params.pyx"]),
+              Extension("focal_stats.focal_stats.focal_correlation",
+                        ["focal_stats/focal_stats/focal_correlation.pyx"]),
+              Extension("focal_stats.focal_stats.focal_statistics",
+                        ["focal_stats/focal_stats/focal_statistics.pyx"])
               ]
 
 setup(
     name='focal_stats',
-    version='0.0.6',
+    version='0.1.0',
     packages=find_packages(),
     url='',
     license='MIT',

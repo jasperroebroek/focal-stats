@@ -1,32 +1,33 @@
 # cython: cdivision=True
 # cython: boundscheck=False
 # cython: wraparound=False
+from typing import Literal, Sequence
 
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from typing import Optional, Union, Iterable
 
 import numpy as np
-import time
+from numpydantic.ndarray import NDArray
+from pydantic import validate_call
 
-from focal_stats.core.utils import timeit, verify_keywords, _parse_array, _parse_nans, _parse_window, \
+from focal_stats.types import Fraction, Mask, PositiveInt, RasterFloat64
+from focal_stats.utils import timeit, _parse_array, _parse_nans, \
     _create_output_array, _calc_below_fraction_accepted_mask, _calc_count_values
 from focal_stats.rolling import rolling_window, rolling_sum
+from focal_stats.window import Window, define_ind_inner, define_window, validate_window
 
-from focal_stats.core.iteration_params cimport _define_iter_params
+from focal_stats.focal_stats.iteration_params cimport _define_iter_params
 
 cimport numpy as np
 from libc.math cimport isnan, sqrt, NAN
 from libc.stdlib cimport free
-
-
 
 cdef enum MajorityMode:
     ascending, descending, nan
 
 
 cdef double[:, ::1] _focal_std(double[:, ::1] a,
-                               int[:] window_size,
+                               int[:] window_shape,
                                np.npy_uint8[:, ::1] mask,
                                double fraction_accepted,
                                bint reduce,
@@ -43,8 +44,8 @@ cdef double[:, ::1] _focal_std(double[:, ::1] a,
 
     shape[0] = a.shape[0]
     shape[1] = a.shape[1]
-    ws[0] = window_size[0]
-    ws[1] = window_size[1]
+    ws[0] = window_shape[0]
+    ws[1] = window_shape[1]
 
     ip = _define_iter_params(shape, ws, fraction_accepted, reduce)
     r = np.full(ip.shape, np.nan, dtype=np.float64)
@@ -62,8 +63,8 @@ cdef double[:, ::1] _focal_std(double[:, ::1] a,
                 a_sum = 0
                 count_values = 0
 
-                for p in range(window_size[0]):
-                    for q in range(window_size[1]):
+                for p in range(window_shape[0]):
+                    for q in range(window_shape[1]):
                         if not isnan(a[i + p, j + q]) and mask[p, q]:
                             a_sum = a_sum + a[i + p, j + q]
                             count_values = count_values + 1
@@ -75,8 +76,8 @@ cdef double[:, ::1] _focal_std(double[:, ::1] a,
                     a_mean = a_sum / count_values
                     x_sum = 0
 
-                    for p in range(window_size[0]):
-                        for q in range(window_size[1]):
+                    for p in range(window_shape[0]):
+                        for q in range(window_shape[1]):
                             if not isnan(a[i + p, j + q]) and mask[p, q]:
                                 x_sum = x_sum + (a[i + p, j + q] - a_mean) ** 2
 
@@ -87,7 +88,7 @@ cdef double[:, ::1] _focal_std(double[:, ::1] a,
 
 
 cdef double[:, ::1] _focal_sum(double[:, ::1] a,
-                               int[:] window_size,
+                               int[:] window_shape,
                                np.npy_uint8[:, ::1] mask,
                                double fraction_accepted,
                                bint reduce,
@@ -101,8 +102,8 @@ cdef double[:, ::1] _focal_sum(double[:, ::1] a,
 
     shape[0] = a.shape[0]
     shape[1] = a.shape[1]
-    ws[0] = window_size[0]
-    ws[1] = window_size[1]
+    ws[0] = window_shape[0]
+    ws[1] = window_shape[1]
 
     ip = _define_iter_params(shape, ws, fraction_accepted, reduce)
     r = np.full(ip.shape, np.nan, dtype=np.float64)
@@ -120,8 +121,8 @@ cdef double[:, ::1] _focal_sum(double[:, ::1] a,
                 a_sum = 0
                 count_values = 0
 
-                for p in range(window_size[0]):
-                    for q in range(window_size[1]):
+                for p in range(window_shape[0]):
+                    for q in range(window_shape[1]):
                         if not isnan(a[i + p, j + q]) and mask[p, q]:
                             a_sum = a_sum + a[i + p, j + q]
                             count_values = count_values + 1
@@ -137,7 +138,7 @@ cdef double[:, ::1] _focal_sum(double[:, ::1] a,
 
 
 cdef double[:, ::1] _focal_min(double[:, ::1] a,
-                               int[:] window_size,
+                               int[:] window_shape,
                                np.npy_uint8[:, ::1] mask,
                                double fraction_accepted,
                                bint reduce,
@@ -151,8 +152,8 @@ cdef double[:, ::1] _focal_min(double[:, ::1] a,
 
     shape[0] = a.shape[0]
     shape[1] = a.shape[1]
-    ws[0] = window_size[0]
-    ws[1] = window_size[1]
+    ws[0] = window_shape[0]
+    ws[1] = window_shape[1]
 
     ip = _define_iter_params(shape, ws, fraction_accepted, reduce)
     r = np.full(ip.shape, np.nan, dtype=np.float64)
@@ -170,8 +171,8 @@ cdef double[:, ::1] _focal_min(double[:, ::1] a,
                 curr_min = 0
                 count_values = 0
 
-                for p in range(window_size[0]):
-                    for q in range(window_size[1]):
+                for p in range(window_shape[0]):
+                    for q in range(window_shape[1]):
                         if not isnan(a[i + p, j + q]) and mask[p, q]:
                             if a[i + p, j + q] < curr_min or count_values == 0:
                                 curr_min = a[i + p, j + q]
@@ -188,7 +189,7 @@ cdef double[:, ::1] _focal_min(double[:, ::1] a,
 
 
 cdef double[:, ::1] _focal_max(double[:, ::1] a,
-                               int[:] window_size,
+                               int[:] window_shape,
                                np.npy_uint8[:, ::1] mask,
                                double fraction_accepted,
                                bint reduce,
@@ -202,8 +203,8 @@ cdef double[:, ::1] _focal_max(double[:, ::1] a,
 
     shape[0] = a.shape[0]
     shape[1] = a.shape[1]
-    ws[0] = window_size[0]
-    ws[1] = window_size[1]
+    ws[0] = window_shape[0]
+    ws[1] = window_shape[1]
 
     ip = _define_iter_params(shape, ws, fraction_accepted, reduce)
     r = np.full(ip.shape, np.nan, dtype=np.float64)
@@ -221,8 +222,8 @@ cdef double[:, ::1] _focal_max(double[:, ::1] a,
                 curr_max = 0
                 count_values = 0
 
-                for p in range(window_size[0]):
-                    for q in range(window_size[1]):
+                for p in range(window_shape[0]):
+                    for q in range(window_shape[1]):
                         if not isnan(a[i + p, j + q]) and mask[p, q]:
                             if a[i + p, j + q] > curr_max or count_values == 0:
                                 curr_max = a[i + p, j + q]
@@ -239,7 +240,7 @@ cdef double[:, ::1] _focal_max(double[:, ::1] a,
 
 
 cdef double[:, ::1] _focal_majority(double[:, ::1] a,
-                                    int[:] window_size,
+                                    int[:] window_shape,
                                     np.npy_uint8[:, ::1] mask,
                                     double fraction_accepted,
                                     bint reduce,
@@ -258,8 +259,8 @@ cdef double[:, ::1] _focal_majority(double[:, ::1] a,
 
     shape[0] = a.shape[0]
     shape[1] = a.shape[1]
-    ws[0] = window_size[0]
-    ws[1] = window_size[1]
+    ws[0] = window_shape[0]
+    ws[1] = window_shape[1]
 
     ip = _define_iter_params(shape, ws, fraction_accepted, reduce)
 
@@ -282,8 +283,8 @@ cdef double[:, ::1] _focal_majority(double[:, ::1] a,
                 count_values = 0
                 c = 1
 
-                for p in range(window_size[0]):
-                    for q in range(window_size[1]):
+                for p in range(window_shape[0]):
+                    for q in range(window_shape[1]):
                         if not isnan(a[i + p, j + q]) and mask[p, q]:
                             in_store = False
                             if count_values == 0:
@@ -340,15 +341,14 @@ cdef double[:, ::1] _focal_majority(double[:, ::1] a,
     return r
 
 
+@validate_call(config={'arbitrary_types_allowed': True})
 @timeit
-@verify_keywords
-def focal_min(a: Iterable,
+def focal_min(a: NDArray,
               *,
-              window_size: Optional[Union[int, Iterable[int]]] = None,
-              mask: Optional[Iterable[bool]] = None,
-              fraction_accepted: float = 0.7,
+              window: PositiveInt | Sequence[PositiveInt] | Mask | Window,
+              fraction_accepted: Fraction = 0.7,
               verbose: bool = False,
-              reduce: bool = False) -> np.ndarray:
+              reduce: bool = False) -> RasterFloat64:
     """
     Focal minimum
 
@@ -356,13 +356,9 @@ def focal_min(a: Iterable,
     ----------
     a : array_like
         Input array (2D)
-    window_size : int, array_like, optional
-        Size of the window that is applied over ``a``. Should be a positive integer. If it is an integer it will be
-        interpreted as (window_size, window_size). If a list is provided it needs to have the same number of entries
-        as the number of dimensions as a.
-    mask : array_like, optional
-        A boolean array (2D). If provided, its shape will be used as ``window_size``, and its entries are used to mask
-        every window.
+    window : int, array_like, Window
+        Window that is applied over ``a``. It can be an integer or a sequence of integers, which will be interpreted as
+        a rectangular window, a mask or a Window object. 
     fraction_accepted : float, optional
         Fraction of valid cells (not NaN) per window that is deemed acceptable
         ``0``: all window are calculated if at least 1 value is present
@@ -385,8 +381,8 @@ def focal_min(a: Iterable,
             behaviours might be implemented. To obtain only the useful cells the
             following might be done:
 
-                >>> window_size = 5
-                >>> fringe = window_size // 2
+                >>> window_shape = 5
+                >>> fringe = window_shape // 2
                 >>> ind_inner = np.s_[fringe:-fringe, fringe:-fringe]
                 >>> a = a[ind_inner]
 
@@ -394,42 +390,50 @@ def focal_min(a: Iterable,
             present
         if ``reduce`` is True:
             numpy ndarray of the function applied on input array ``a``. The shape
-            will be the original shape divided by the ``window_size``. Dimensions
+            will be the original shape divided by the ``window_shape``. Dimensions
             remain equal. No border of NaN values is present.
     """
-    a_parsed = _parse_array(a)
-    empty_flag, nan_flag, nan_mask = _parse_nans(a_parsed)
-    mask_flag, mask_parsed, window_size_parsed, fringes, ind_inner = _parse_window(a_parsed, window_size, mask, reduce)
+    dtype_original = a.dtype
+    a = _parse_array(a)
+    empty_flag, nan_flag, nan_mask = _parse_nans(a, dtype_original)
+
+    shape = np.asarray(a.shape)
+
+    window = define_window(window)
+    validate_window(window, shape, reduce, allow_even=False)
+
+    mask = window.get_mask(2)
+    window_shape = np.asarray(window.get_shape(2), dtype=np.int32)
+
+    ind_inner = define_ind_inner(window, reduce)
 
     if empty_flag:
         if verbose:
             print("- Empty array")
-        return _create_output_array(a_parsed, window_size_parsed, reduce)
+        return _create_output_array(a, window_shape, reduce)
 
-    if not nan_flag and not mask_flag:
-        r = _create_output_array(a_parsed, window_size_parsed, reduce)
+    if not nan_flag and not window.masked:
+        r = _create_output_array(a, window_shape, reduce)
 
         r[ind_inner] = (
-            rolling_window(a_parsed, window_size=window_size_parsed, mask=None, reduce=reduce)
-            .min(axis=(2, 3))
+            rolling_window(a, window=window, reduce=reduce).min(axis=(2, 3))
         )
 
         return r
 
     return np.asarray(
-        _focal_min(a_parsed, window_size_parsed, mask_parsed, fraction_accepted, reduce)
+        _focal_min(a, window_shape, mask, fraction_accepted, reduce)
     )
 
 
+@validate_call(config={'arbitrary_types_allowed': True})
 @timeit
-@verify_keywords
-def focal_max(a: Iterable,
+def focal_max(a: NDArray,
               *,
-              window_size: Optional[Union[int, Iterable[int]]] = None,
-              mask: Optional[Iterable[bool]] = None,
-              fraction_accepted: float = 0.7,
+              window: PositiveInt | Sequence[PositiveInt] | Mask | Window,
+              fraction_accepted: Fraction = 0.7,
               verbose: bool = False,
-              reduce: bool = False) -> np.ndarray:
+              reduce: bool = False) -> RasterFloat64:
     """
     Focal maximum
 
@@ -437,13 +441,9 @@ def focal_max(a: Iterable,
     ----------
     a : array_like
         Input array (2D)
-    window_size : int, array_like, optional
-        Size of the window that is applied over ``a``. Should be a positive integer. If it is an integer it will be
-        interpreted as (window_size, window_size). If a list is provided it needs to have the same number of entries
-        as the number of dimensions as a.
-    mask : array_like, optional
-        A boolean array (2D). If provided, its shape will be used as ``window_size``, and its entries are used to mask
-        every window.
+    window : int, array_like, Window
+        Window that is applied over ``a``. It can be an integer or a sequence of integers, which will be interpreted as
+        a rectangular window, a mask or a Window object. 
     fraction_accepted : float, optional
         Fraction of valid cells (not NaN) per window that is deemed acceptable
         ``0``: all window are calculated if at least 1 value is present
@@ -466,8 +466,8 @@ def focal_max(a: Iterable,
             behaviours might be implemented. To obtain only the useful cells the
             following might be done:
 
-                >>> window_size = 5
-                >>> fringe = window_size // 2
+                >>> window_shape = 5
+                >>> fringe = window_shape // 2
                 >>> ind_inner = np.s_[fringe:-fringe, fringe:-fringe]
                 >>> a = a[ind_inner]
 
@@ -475,42 +475,50 @@ def focal_max(a: Iterable,
             present
         if ``reduce`` is True:
             numpy ndarray of the function applied on input array ``a``. The shape
-            will be the original shape divided by the ``window_size``. Dimensions
+            will be the original shape divided by the ``window_shape``. Dimensions
             remain equal. No border of NaN values is present.
     """
-    a_parsed = _parse_array(a)
-    empty_flag, nan_flag, nan_mask = _parse_nans(a_parsed)
-    mask_flag, mask_parsed, window_size_parsed, fringes, ind_inner = _parse_window(a_parsed, window_size, mask, reduce)
+    dtype_original = a.dtype
+    a = _parse_array(a)
+    empty_flag, nan_flag, nan_mask = _parse_nans(a, dtype_original)
+
+    shape = np.asarray(a.shape)
+
+    window = define_window(window)
+    validate_window(window, shape, reduce, allow_even=False)
+
+    mask = window.get_mask(2)
+    window_shape = np.asarray(window.get_shape(2), dtype=np.int32)
+
+    ind_inner = define_ind_inner(window, reduce)
 
     if empty_flag:
         if verbose:
             print("- Empty array")
-        return _create_output_array(a_parsed, window_size_parsed, reduce)
+        return _create_output_array(a, window_shape, reduce)
 
-    if not nan_flag and not mask_flag:
-        r = _create_output_array(a_parsed, window_size_parsed, reduce)
+    if not nan_flag and not window.masked:
+        r = _create_output_array(a, window_shape, reduce)
 
         r[ind_inner] = (
-            rolling_window(a_parsed, window_size=window_size_parsed, mask=None, reduce=reduce)
-            .max(axis=(2, 3))
+            rolling_window(a, window=window, reduce=reduce).max(axis=(2, 3))
         )
 
         return r
 
     return np.asarray(
-        _focal_max(a_parsed, window_size_parsed, mask_parsed, fraction_accepted, reduce)
+        _focal_max(a, window_shape, mask, fraction_accepted, reduce)
     )
 
 
+@validate_call(config={'arbitrary_types_allowed': True})
 @timeit
-@verify_keywords
-def focal_mean(a: Iterable,
+def focal_mean(a: NDArray,
                *,
-               window_size: Optional[Union[int, Iterable[int]]] = None,
-               mask: Optional[Iterable[bool]] = None,
-               fraction_accepted: float = 0.7,
+               window: PositiveInt | Sequence[PositiveInt] | Mask | Window,
+               fraction_accepted: Fraction = 0.7,
                verbose: bool = False,
-               reduce: bool = False) -> np.ndarray:
+               reduce: bool = False) -> RasterFloat64:
     """
     Focal mean
 
@@ -518,12 +526,11 @@ def focal_mean(a: Iterable,
     ----------
     a : array_like
         Input array (2D)
-    window_size : int, array_like, optional
-        Size of the window that is applied over ``a``. Should be a positive integer. If it is an integer it will be
-        interpreted as (window_size, window_size). If a list is provided it needs to have the same number of entries
-        as the number of dimensions as a.
+    window : int, array_like, Window
+        Window that is applied over ``a``. It can be an integer or a sequence of integers, which will be interpreted as
+        a rectangular window, a mask or a Window object. 
     mask : array_like, optional
-        A boolean array (2D). If provided, its shape will be used as ``window_size``, and its entries are used to mask
+        A boolean array (2D). If provided, its shape will be used as ``window_shape``, and its entries are used to mask
         every window.
     fraction_accepted : float, optional
         Fraction of valid cells (not NaN) per window that is deemed acceptable
@@ -547,8 +554,8 @@ def focal_mean(a: Iterable,
             behaviours might be implemented. To obtain only the useful cells the
             following might be done:
 
-                >>> window_size = 5
-                >>> fringe = window_size // 2
+                >>> window_shape = 5
+                >>> fringe = window_shape // 2
                 >>> ind_inner = np.s_[fringe:-fringe, fringe:-fringe]
                 >>> a = a[ind_inner]
 
@@ -556,31 +563,37 @@ def focal_mean(a: Iterable,
             present
         if ``reduce`` is True:
             numpy ndarray of the function applied on input array ``a``. The shape
-            will be the original shape divided by the ``window_size``. Dimensions
+            will be the original shape divided by the ``window_shape``. Dimensions
             remain equal. No border of NaN values is present.
     """
-    r = focal_sum(a, window_size=window_size, mask=mask, fraction_accepted=fraction_accepted, verbose=verbose, reduce=reduce)
+    dtype_original = a.dtype
+    a = _parse_array(a)
+    empty_flag, nan_flag, nan_mask = _parse_nans(a, dtype_original)
 
-    a_parsed = _parse_array(a)
-    empty_flag, nan_flag, nan_mask = _parse_nans(a_parsed)
-    mask_flag, mask_parsed, window_size_parsed, fringes, ind_inner = _parse_window(a_parsed, window_size, mask, reduce)
+    shape = np.asarray(a.shape)
 
-    count_values = _calc_count_values(window_size_parsed, mask_parsed, nan_mask, reduce, ind_inner)
+    window = define_window(window)
+    validate_window(window, shape, reduce, allow_even=False)
+
+    ind_inner = define_ind_inner(window, reduce)
+
+    r = focal_sum(a, window=window, fraction_accepted=fraction_accepted, verbose=verbose, reduce=reduce)
+
+    count_values = _calc_count_values(window, nan_mask, reduce, ind_inner)
 
     r[ind_inner] = r[ind_inner] / count_values
     return r
 
 
+@validate_call(config={'arbitrary_types_allowed': True})
 @timeit
-@verify_keywords
-def focal_std(a: Iterable,
+def focal_std(a: NDArray,
               *,
-              window_size: Optional[Union[int, Iterable[int]]] = None,
-              mask: Optional[Iterable[bool]] = None,
-              fraction_accepted: float = 0.7,
+              window: PositiveInt | Sequence[PositiveInt] | Mask | Window,
+              fraction_accepted: Fraction = 0.7,
               verbose: bool = False,
               reduce: bool = False,
-              std_df: int = 0) -> np.ndarray:
+              std_df: Literal[0, 1] = 0) -> RasterFloat64:
     """
     Focal standard deviation
 
@@ -588,13 +601,9 @@ def focal_std(a: Iterable,
     ----------
     a : array_like
         Input array (2D)
-    window_size : int, array_like, optional
-        Size of the window that is applied over ``a``. Should be a positive integer. If it is an integer it will be
-        interpreted as (window_size, window_size). If a list is provided it needs to have the same number of entries
-        as the number of dimensions as a.
-    mask : array_like, optional
-        A boolean array (2D). If provided, its shape will be used as ``window_size``, and its entries are used to mask
-        every window.
+    window : int, array_like, Window
+        Window that is applied over ``a``. It can be an integer or a sequence of integers, which will be interpreted as
+        a rectangular window, a mask or a Window object. 
     fraction_accepted : float, optional
         Fraction of valid cells (not NaN) per window that is deemed acceptable
         ``0``: all window are calculated if at least 1 value is present
@@ -620,8 +629,8 @@ def focal_std(a: Iterable,
             behaviours might be implemented. To obtain only the useful cells the
             following might be done:
 
-                >>> window_size = 5
-                >>> fringe = window_size // 2
+                >>> window_shape = 5
+                >>> fringe = window_shape // 2
                 >>> ind_inner = np.s_[fringe:-fringe, fringe:-fringe]
                 >>> a = a[ind_inner]
 
@@ -629,32 +638,39 @@ def focal_std(a: Iterable,
             present
         if ``reduce`` is True:
             numpy ndarray of the function applied on input array ``a``. The shape
-            will be the original shape divided by the ``window_size``. Dimensions
+            will be the original shape divided by the ``window_shape``. Dimensions
             remain equal. No border of NaN values is present.
     """
-    a_parsed = _parse_array(a)
-    empty_flag, nan_flag, nan_mask = _parse_nans(a_parsed)
-    mask_flag, mask_parsed, window_size_parsed, fringes, ind_inner = _parse_window(a_parsed, window_size, mask, reduce)
+    dtype_original = a.dtype
+    a = _parse_array(a)
+    empty_flag, nan_flag, nan_mask = _parse_nans(a, dtype_original)
+
+    shape = np.asarray(a.shape)
+
+    window = define_window(window)
+    validate_window(window, shape, reduce, allow_even=False)
+
+    mask = window.get_mask(2)
+    window_shape = np.asarray(window.get_shape(2), dtype=np.int32)
 
     if empty_flag:
         if verbose:
             print("- Empty array")
-        return _create_output_array(a_parsed, window_size_parsed, reduce)
+        return _create_output_array(a, window_shape, reduce)
 
     return np.asarray(
-        _focal_std(a_parsed, window_size_parsed, mask_parsed, fraction_accepted, reduce, std_df)
+        _focal_std(a, window_shape, mask, fraction_accepted, reduce, std_df)
     )
 
 
+@validate_call(config={'arbitrary_types_allowed': True})
 @timeit
-@verify_keywords
-def focal_sum(a: Iterable,
+def focal_sum(a: NDArray,
               *,
-              window_size: Optional[Union[int, Iterable[int]]] = None,
-              mask: Optional[Iterable[bool]] = None,
-              fraction_accepted: float = 0.7,
+              window: PositiveInt | Sequence[PositiveInt] | Mask | Window,
+              fraction_accepted: Fraction = 0.7,
               verbose: bool = False,
-              reduce: bool = False) -> np.ndarray:
+              reduce: bool = False) -> RasterFloat64:
     """
     Focal summation
 
@@ -662,13 +678,9 @@ def focal_sum(a: Iterable,
     ----------
     a : array_like
         Input array (2D)
-    window_size : int, array_like, optional
-        Size of the window that is applied over ``a``. Should be a positive integer. If it is an integer it will be
-        interpreted as (window_size, window_size). If a list is provided it needs to have the same number of entries
-        as the number of dimensions as a.
-    mask : array_like, optional
-        A boolean array (2D). If provided, its shape will be used as ``window_size``, and its entries are used to mask
-        every window.
+    window : int, array_like, Window
+        Window that is applied over ``a``. It can be an integer or a sequence of integers, which will be interpreted as
+        a rectangular window, a mask or a Window object. 
     fraction_accepted : float, optional
         Fraction of valid cells (not NaN) per window that is deemed acceptable
         ``0``: all window are calculated if at least 1 value is present
@@ -691,8 +703,8 @@ def focal_sum(a: Iterable,
             behaviours might be implemented. To obtain only the useful cells the
             following might be done:
 
-                >>> window_size = 5
-                >>> fringe = window_size // 2
+                >>> window_shape = 5
+                >>> fringe = window_shape // 2
                 >>> ind_inner = np.s_[fringe:-fringe, fringe:-fringe]
                 >>> a = a[ind_inner]
 
@@ -700,44 +712,58 @@ def focal_sum(a: Iterable,
             present
         if ``reduce`` is True:
             numpy ndarray of the function applied on input array ``a``. The shape
-            will be the original shape divided by the ``window_size``. Dimensions
+            will be the original shape divided by the ``window_shape``. Dimensions
             remain equal. No border of NaN values is present.
     """
-    a_parsed = _parse_array(a)
-    empty_flag, nan_flag, nan_mask = _parse_nans(a_parsed)
-    mask_flag, mask_parsed, window_size_parsed, fringes, ind_inner = _parse_window(a_parsed, window_size, mask, reduce)
+    dtype_original = a.dtype
+    a = _parse_array(a)
+    empty_flag, nan_flag, nan_mask = _parse_nans(a, dtype_original)
+
+    shape = np.asarray(a.shape)
+
+    window = define_window(window)
+    validate_window(window, shape, reduce, allow_even=False)
+
+    mask = window.get_mask(2)
+    window_shape = np.asarray(window.get_shape(2), dtype=np.int32)
+
+    ind_inner = define_ind_inner(window, reduce)
 
     if empty_flag:
         if verbose:
             print("- Empty array")
-        return _create_output_array(a_parsed, window_size_parsed, reduce)
+        return _create_output_array(a, window_shape, reduce)
 
-    if not mask_flag:
-        r = _create_output_array(a_parsed, window_size_parsed, reduce)
-        a_parsed = a_parsed.copy()
+    if not window.masked:
+        r = _create_output_array(a, window_shape, reduce)
+        a_parsed = a.copy()
         a_parsed[nan_mask] = 0
 
         below_fraction_accepted_mask = _calc_below_fraction_accepted_mask(
-            window_size_parsed, mask_parsed, nan_mask, ind_inner, fraction_accepted, reduce)
-        r[ind_inner] = rolling_sum(a_parsed, window_size=window_size_parsed, mask=None, reduce=reduce)
+            window,
+            nan_mask,
+            ind_inner,
+            fraction_accepted,
+            reduce
+        )
+        r[ind_inner] = rolling_sum(a_parsed, window=window, reduce=reduce)
         r[ind_inner][below_fraction_accepted_mask] = np.nan
         return r
 
     return np.asarray(
-        _focal_sum(a_parsed, window_size_parsed, mask_parsed, fraction_accepted, reduce)
+        _focal_sum(a, window_shape, mask, fraction_accepted, reduce)
     )
 
 
+@validate_call(config={'arbitrary_types_allowed': True})
 @timeit
-@verify_keywords
-def focal_majority(a: Iterable,
+def focal_majority(a: NDArray,
                    *,
-                   window_size: Optional[Union[int, Iterable[int]]] = None,
-                   mask: Optional[Iterable[bool]] = None,
-                   fraction_accepted: float = 0.7,
+                   window: PositiveInt | Sequence[PositiveInt] | Mask | Window,
+                   fraction_accepted: Fraction = 0.7,
                    verbose: bool = False,
                    reduce: bool = False,
-                   majority_mode: str = 'nan') -> np.ndarray:
+                   majority_mode: Literal["nan", "ascending", "descending"] = 'nan') -> RasterFloat64:
     """
     Focal majority
 
@@ -745,13 +771,9 @@ def focal_majority(a: Iterable,
     ----------
     a : array_like
         Input array (2D)
-    window_size : int, array_like, optional
-        Size of the window that is applied over ``a``. Should be a positive integer. If it is an integer it will be
-        interpreted as (window_size, window_size). If a list is provided it needs to have the same number of entries
-        as the number of dimensions as a.
-    mask : array_like, optional
-        A boolean array (2D). If provided, its shape will be used as ``window_size``, and its entries are used to mask
-        every window.
+    window : int, array_like, Window
+        Window that is applied over ``a``. It can be an integer or a sequence of integers, which will be interpreted as
+        a rectangular window, a mask or a Window object. 
     fraction_accepted : float, optional
         Fraction of valid cells (not NaN) per window that is deemed acceptable
         ``0``: all window are calculated if at least 1 value is present
@@ -780,8 +802,8 @@ def focal_majority(a: Iterable,
             behaviours might be implemented. To obtain only the useful cells the
             following might be done:
 
-                >>> window_size = 5
-                >>> fringe = window_size // 2
+                >>> window_shape = 5
+                >>> fringe = window_shape // 2
                 >>> ind_inner = np.s_[fringe:-fringe, fringe:-fringe]
                 >>> a = a[ind_inner]
 
@@ -789,25 +811,37 @@ def focal_majority(a: Iterable,
             present
         if ``reduce`` is True:
             numpy ndarray of the function applied on input array ``a``. The shape
-            will be the original shape divided by the ``window_size``. Dimensions
+            will be the original shape divided by the ``window_shape``. Dimensions
             remain equal. No border of NaN values is present.
     """
     modes = {'nan': MajorityMode.nan,
              'ascending': MajorityMode.ascending,
              'descending': MajorityMode.descending}
 
+    dtype_original = a.dtype
+    a = _parse_array(a)
+    empty_flag, nan_flag, nan_mask = _parse_nans(a, dtype_original)
+
     c_mode = modes[majority_mode]
 
-    a_parsed = _parse_array(a)
-    empty_flag, nan_flag, nan_mask = _parse_nans(a_parsed)
-    mask_flag, mask_parsed, window_size_parsed, fringes, ind_inner = _parse_window(a_parsed, window_size, mask, reduce)
+    shape = np.asarray(a.shape)
+
+    window = define_window(window)
+    validate_window(window, shape, reduce, allow_even=False)
+
+    mask = window.get_mask(2)
+    window_shape = np.asarray(window.get_shape(2), dtype=np.int32)
 
     if empty_flag:
         if verbose:
             print("- Empty array")
-        return _create_output_array(a_parsed, window_size_parsed, reduce)
+        return _create_output_array(a, window_shape, reduce)
 
-    print(a_parsed.dtype, window_size_parsed.dtype, mask_parsed.dtype)
     return np.asarray(
-        _focal_majority(a_parsed, window_size_parsed, mask_parsed, fraction_accepted, reduce, c_mode)
+        _focal_majority(a,
+                        window_shape,
+                        mask,
+                        fraction_accepted,
+                        reduce,
+                        c_mode)
     )

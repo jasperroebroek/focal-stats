@@ -1,10 +1,66 @@
-from typing import Callable, Dict
+import tempfile
+from typing import Callable, Dict, List, Optional, Tuple
 
 import numpy as np
+from focal_stats.raster_windows import WindowPair, define_windows
 from joblib import Parallel, delayed
 
-from focal_stats.core.utils import timeit
-from focal_stats.windows import define_windows, WindowPair
+from focal_stats.utils import timeit
+
+
+class MemmapContext:
+    def __init__(self, shape: Tuple[int, int], window_size: int, reduce: bool, dtype: np.dtype = np.float64):
+        if len(shape) != 2:
+            raise IndexError("Only 2D")
+
+        if reduce:
+            self.memmap_shape = shape[0] // window_size, shape[1] // window_size
+        else:
+            self.memmap_shape = shape
+
+        self.dtype = dtype
+        self.open: bool = False
+        self.temp_file = None
+        self.memmap: Optional[np.memmap] = None
+
+    def create(self) -> np.memmap:
+        if not self.open:
+            self.open = True
+            self.temp_file = tempfile.NamedTemporaryFile(mode='w+')
+            self.memmap = np.memmap(filename=self.temp_file.name, dtype=self.dtype, mode='w+', shape=self.memmap_shape)
+
+        return self.memmap
+
+    def close(self):
+        if not self.open:
+            raise FileNotFoundError("File is not open")
+        else:
+            self.open = False
+            self.temp_file.close()
+
+    def __enter__(self) -> np.memmap:
+        return self.create()
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self.close()
+
+
+class OutputDict:
+    def __init__(self, keys: List[str], **kwargs):
+        self.keys = keys
+        self.kw = kwargs
+        self.contexts = {}
+        self.memmaps = {}
+
+    def __enter__(self):
+        for key in self.keys:
+            self.contexts[key] = MemmapContext(**self.kw)
+            self.memmaps[key] = self.contexts[key].create()
+        return self.memmaps
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        for key in self.keys:
+            self.contexts[key].close()
 
 
 def process_window(fn: Callable,
