@@ -1,4 +1,7 @@
 name: focal_stats
+channels:
+  - defaults
+  - conda-forge
 dependencies:
   - cibuildwheel
   - cython
