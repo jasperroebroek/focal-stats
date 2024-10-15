@@ -16,22 +16,27 @@ jobs:
       - name: Setup micromamba and install dependencies
         uses: mamba-org/setup-micromamba@v2
         with:
+          init-shell: bash
           environment-name: focal-stats-env
           environment-file: environment.yml
 
       - name: Locally install focal-stats
+        shell: bash
         run: micromamba run -n focal-stats-env python -m pip install .
 
       - name: Run tests
+        shell: bash
         run: micromamba run -n focal-stats-env python -m pytest tests
 
       - name: Build wheels
+        shell: bash
         run: micromamba run -n focal-stats-env python -m cibuildwheel --output-dir wheelhouse
         env:
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.9"
           CIBW_SKIP: pp*
 
       - uses: actions/upload-artifact@v4
+        shell: bash
         with:
           name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl
