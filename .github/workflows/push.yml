@@ -12,4 +12,4 @@ on:
 
 jobs:
   push:
-    uses: ./.github/workflows/build.yml  # use the callable tests job to run tests
+    uses: ./.github/workflows/build.yml
