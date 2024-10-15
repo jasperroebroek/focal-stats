@@ -1,26 +1,35 @@
 import tempfile
-from typing import Callable, Dict, List, Optional, Tuple
+from typing import Callable, Dict, List, Literal, Optional, Sequence
 
 import numpy as np
-from focal_stats.raster_windows import WindowPair, define_windows
 from joblib import Parallel, delayed
+from numpy._typing import DTypeLike
+from numpydantic import NDArray
+from pydantic import BaseModel, ConfigDict, validate_call
 
+from focal_stats.raster_window import RasterWindowPair, construct_windows
+from focal_stats.types import Mask, PositiveInt, Shape2D
 from focal_stats.utils import timeit
+from focal_stats.window import Window, define_window, validate_window
 
 
-class MemmapContext:
-    def __init__(self, shape: Tuple[int, int], window_size: int, reduce: bool, dtype: np.dtype = np.float64):
-        if len(shape) != 2:
-            raise IndexError("Only 2D")
+class MemmapContext(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    raster_shape: Shape2D
+    window_shape: Shape2D
+    reduce: bool
+    dtype: DTypeLike = np.float64
 
-        if reduce:
-            self.memmap_shape = shape[0] // window_size, shape[1] // window_size
+    def __post_init__(self):
+        if self.reduce:
+            self.memmap_shape = (
+                self.raster_shape[0] // self.window_shape[0],
+                self.raster_shape[1] // self.window_shape[1]
+            )
         else:
-            self.memmap_shape = shape
+            self.memmap_shape = self.raster_shape
 
-        self.dtype = dtype
         self.open: bool = False
-        self.temp_file = None
         self.memmap: Optional[np.memmap] = None
 
     def create(self) -> np.memmap:
@@ -64,54 +73,58 @@ class OutputDict:
 
 
 def process_window(fn: Callable,
-                   inputs: Dict[str, np.ndarray],
-                   outputs: Dict[str, np.ndarray],
-                   windows: WindowPair,
+                   inputs: Dict[str, NDArray],
+                   outputs: Dict[str, NDArray],
+                   windows: RasterWindowPair,
                    **kwargs) -> None:
-    input_slices = windows.input.toslices()
+    input_slices = windows.input.slices
     print({key: inputs[key][..., input_slices[0], input_slices[1]] for key in inputs})
     result = fn(**{key: inputs[key][..., input_slices[0], input_slices[1]] for key in inputs}, **kwargs)
 
     for key in outputs:
-        output_slices = windows.output.toslices()
+        output_slices = windows.output.slices
         outputs[key][..., output_slices[0], output_slices[1]] = result[key]
 
 
+@validate_call(config={'arbitrary_types_allowed': True})
 @timeit
 def focal_function(fn: Callable,
-                   inputs: Dict[str, np.ndarray],
-                   outputs: Dict[str, np.ndarray],
-                   window_size: int,
+                   inputs: Dict[str, NDArray],
+                   outputs: Dict[str, NDArray],
+                   window: PositiveInt | Sequence[PositiveInt] | Mask | Window,
                    reduce: bool = False,
                    # joblib Parallel arg
-                   n_jobs: int = 1,
+                   n_jobs: PositiveInt = 1,
                    verbose: bool = False,
-                   prefer: str = 'threads',
+                   prefer: Literal['threads', 'processes'] = 'threads',
                    # kwargs go to fn
                    **kwargs) -> None:
     """Focal statistics with an arbitrary function. prefer 'threads' always works, 'processes' only works with memmaps,
     but provides potentially large speed-ups"""
-
-    shapes = []
+    raster_shapes = []
     for key in inputs:
         s = inputs[key].shape[-2:]
         if len(s) != 2:
             raise IndexError("All inputs need to be at least 2D")
-        shapes.append(s)
+        raster_shapes.append(s)
 
-    for s in shapes:
-        if not s == shapes[0]:
-            raise IndexError(f'Not all input rasters have the same shape: {shapes}')
+    for s in raster_shapes:
+        if not s == raster_shapes[0]:
+            raise IndexError(f'Not all input rasters have the same shape: {raster_shapes}')
+
+    window = define_window(window)
+    validate_window(window, raster_shapes[0], reduce)
+    window_shape = window.get_shape(2)
 
     for key in outputs:
         shape = outputs[key].shape[-2:]
         if (
-                reduce and (shapes[0][0] // window_size, shapes[0][1] // window_size) != shape or
-                not reduce and shape != shapes[0]
+                reduce and (raster_shapes[0][0] // window_shape[0], raster_shapes[0][1] // window_shape[1]) != shape or
+                not reduce and shape != raster_shapes[0]
         ):
-            raise IndexError(f"Output shapes not matching input shapes: {shapes[0]} {shape}")
+            raise IndexError(f"Output shapes not matching input shapes: {raster_shapes[0]} {shape}")
 
-    window_pairs = define_windows(shapes[0], window_size, reduce)
+    window_pairs = construct_windows(raster_shapes[0], window_shape, reduce)
 
     Parallel(n_jobs=n_jobs, verbose=verbose, prefer=prefer, mmap_mode='r+')(
         delayed(process_window)(

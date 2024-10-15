@@ -11,7 +11,7 @@ from focal_stats.window import define_window
 
 def overlapping_arrays(m, preserve_input=True):
     """
-    Taking two maps of the same shape and returns them with  all the cells that don't exist in the other set to np.nan
+    Taking two maps of the same raster_shape and returns them with  all the cells that don't exist in the other set to np.nan
 
     Parameters
     ----------
@@ -80,7 +80,7 @@ def focal_correlation_simple(map1, map2, window=5, fraction_accepted=0.7):
     Returns
     -------
     corr : :obj:`~numpy.ndarray`
-        numpy array of the same shape as a and b with the local correlation
+        numpy array of the same raster_shape as a and b with the local correlation
 
     """
     map1, map2 = overlapping_arrays([map1, map2])
@@ -141,7 +141,7 @@ def test_correlation_values():
 
 
 def test_correlation_values_large():
-    # compare for larger shape
+    # compare for larger raster_shape
     a = np.random.rand(25, 25)
     b = np.random.rand(25, 25)
 
@@ -223,7 +223,7 @@ def test_correlation_errors():
         b = np.random.rand(10, 10)
         focal_correlation(a, b, window=11)
 
-    # uneven window_size is not supported
+    # uneven window_shape is not supported
     with pytest.raises(ValueError):
         a = np.random.rand(10, 10)
         b = np.random.rand(10, 10)

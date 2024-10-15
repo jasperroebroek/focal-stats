@@ -23,7 +23,7 @@ def rolling_sum(a: NDArray,
         Input array
     window : int, array_like, Window
         Window that is applied over ``a``. It can be an integer or a sequence of integers, which will be interpreted as
-        a rectangular window, a mask or a window object. If a mask is provided, its shape will be used to flatten ``a``,
+        a rectangular window, a mask or a window object. If a mask is provided, its raster_shape will be used to flatten ``a``,
         resulting in dimensionality ``a.ndim + 1`` as the final result, just as in the case of `flatten` is True.
     reduce : bool, optional
         Reuse data if set to False (which is the default) in which case an array will be returned with dimensions that
@@ -33,7 +33,7 @@ def rolling_sum(a: NDArray,
     Returns
     -------
     :obj:`~numpy.ndarray`
-        Rolling sum over array ``a``. Resulting shape depends on reduce parameter. See :func:`rolling_window` for
+        Rolling sum over array ``a``. Resulting raster_shape depends on reduce parameter. See :func:`rolling_window` for
         documentation. If a mask is provided, the last dimension has the length of the sum of ``mask``.
     """
     a = np.asarray(a)
@@ -92,7 +92,7 @@ def rolling_mean(a: NDArray,
         Input array
     window : int, array_like, Window
         Window that is applied over ``a``. It can be an integer or a sequence of integers, which will be interpreted as
-        a rectangular window, a mask or a window object. If a mask is provided, its shape will be used to flatten ``a``,
+        a rectangular window, a mask or a window object. If a mask is provided, its raster_shape will be used to flatten ``a``,
         resulting in dimensionality ``a.ndim + 1`` as the final result, just as in the case of `flatten` is True.
     reduce : bool, optional
         Reuse data if set to False (which is the default) in which case an array will be returned with dimensions that
@@ -102,7 +102,7 @@ def rolling_mean(a: NDArray,
     Returns
     -------
     :obj:`~numpy.ndarray`
-        Rolling mean over array ``a``. Resulting shape depends on reduce parameter. See :func:`rolling_window` for
+        Rolling mean over array ``a``. Resulting raster_shape depends on reduce parameter. See :func:`rolling_window` for
         documentation. If a mask is provided, the last dimension has the length of the sum of ``mask``.
     """
     a = np.asarray(a)

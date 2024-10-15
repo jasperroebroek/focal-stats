@@ -26,7 +26,7 @@ def test_focal_stats_values():
     assert np.allclose(focal_stats.focal_std(a, window=5, reduce=True)[0, 0], a.std())
     assert np.allclose(focal_stats.focal_std(a, window=5, std_df=1, reduce=True)[0, 0], a.std(ddof=1))
 
-    # compare for larger shape
+    # compare for larger raster_shape
     a = np.random.rand(100, 100)
 
     assert np.allclose(focal_stats.focal_std(a, window=5, std_df=0, reduce=True),
@@ -115,13 +115,13 @@ def test_focal_stats_errors(fs):
         a = np.random.rand(10, 10)
         fs(a, window=11)
 
-    # uneven window_size is not supported
+    # uneven window_shape is not supported
     with pytest.raises(ValueError):
         a = np.random.rand(10, 10)
         fs(a, window=4)
 
     # Not exactly divided in reduce mode
-    with pytest.raises((NotImplementedError, ValueError)):
+    with pytest.raises(ValueError):
         a = np.random.rand(10, 10)
         fs(a, window=4, reduce=True)
 

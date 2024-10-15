@@ -84,9 +84,9 @@ def validate_window(window: Window, shape: NDArray[Any, int], reduce: bool, allo
 
     if reduce:
         if not np.array_equal(shape // window_shape, shape / window_shape):
-            raise ValueError("not all dimensions are divisible by window_size")
+            raise ValueError("not all dimensions are divisible by window_shape")
 
-    elif not allow_even:
+    if not allow_even and not reduce:
         if not np.all(window_shape % 2):
             raise ValueError("Uneven window size is not allowed when not reducing")
 

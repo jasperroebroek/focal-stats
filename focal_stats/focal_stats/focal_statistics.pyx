@@ -368,14 +368,14 @@ def focal_min(a: NDArray,
         Verbosity with timing. False by default
     reduce : bool, optional
         The way in which the windowed array is created. If true, all values are used exactly once. If False (which is
-        the default), values are reduced and the output array has the same shape as the input array, albeit with a
+        the default), values are reduced and the output array has the same raster_shape as the input array, albeit with a
         border of nans where there are not enough values to calculate the cells.
 
     Returns
     -------
     :obj:`~numpy.ndarray`
         if ``reduce`` is False:
-            numpy ndarray of the function applied to input array ``a``. The shape will
+            numpy ndarray of the function applied to input array ``a``. The raster_shape will
             be the same as the input array. The border of the map will be filled with nan,
             because of the lack of data to calculate the border. In the future other
             behaviours might be implemented. To obtain only the useful cells the
@@ -389,8 +389,8 @@ def focal_min(a: NDArray,
             in which case a will only contain the cells for which all data was
             present
         if ``reduce`` is True:
-            numpy ndarray of the function applied on input array ``a``. The shape
-            will be the original shape divided by the ``window_shape``. Dimensions
+            numpy ndarray of the function applied on input array ``a``. The raster_shape
+            will be the original raster_shape divided by the ``window_shape``. Dimensions
             remain equal. No border of NaN values is present.
     """
     dtype_original = a.dtype
@@ -453,14 +453,14 @@ def focal_max(a: NDArray,
         Verbosity with timing. False by default
     reduce : bool, optional
         The way in which the windowed array is created. If true, all values are used exactly once. If False (which is
-        the default), values are reduced and the output array has the same shape as the input array, albeit with a
+        the default), values are reduced and the output array has the same raster_shape as the input array, albeit with a
         border of nans where there are not enough values to calculate the cells.
 
     Returns
     -------
     :obj:`~numpy.ndarray`
         if ``reduce`` is False:
-            numpy ndarray of the function applied to input array ``a``. The shape will
+            numpy ndarray of the function applied to input array ``a``. The raster_shape will
             be the same as the input array. The border of the map will be filled with nan,
             because of the lack of data to calculate the border. In the future other
             behaviours might be implemented. To obtain only the useful cells the
@@ -474,8 +474,8 @@ def focal_max(a: NDArray,
             in which case a will only contain the cells for which all data was
             present
         if ``reduce`` is True:
-            numpy ndarray of the function applied on input array ``a``. The shape
-            will be the original shape divided by the ``window_shape``. Dimensions
+            numpy ndarray of the function applied on input array ``a``. The raster_shape
+            will be the original raster_shape divided by the ``window_shape``. Dimensions
             remain equal. No border of NaN values is present.
     """
     dtype_original = a.dtype
@@ -530,7 +530,7 @@ def focal_mean(a: NDArray,
         Window that is applied over ``a``. It can be an integer or a sequence of integers, which will be interpreted as
         a rectangular window, a mask or a Window object. 
     mask : array_like, optional
-        A boolean array (2D). If provided, its shape will be used as ``window_shape``, and its entries are used to mask
+        A boolean array (2D). If provided, its raster_shape will be used as ``window_shape``, and its entries are used to mask
         every window.
     fraction_accepted : float, optional
         Fraction of valid cells (not NaN) per window that is deemed acceptable
@@ -541,14 +541,14 @@ def focal_mean(a: NDArray,
         Verbosity with timing. False by default
     reduce : bool, optional
         The way in which the windowed array is created. If true, all values are used exactly once. If False (which is
-        the default), values are reduced and the output array has the same shape as the input array, albeit with a
+        the default), values are reduced and the output array has the same raster_shape as the input array, albeit with a
         border of nans where there are not enough values to calculate the cells.
 
     Returns
     -------
     :obj:`~numpy.ndarray`
         if ``reduce`` is False:
-            numpy ndarray of the function applied to input array ``a``. The shape will
+            numpy ndarray of the function applied to input array ``a``. The raster_shape will
             be the same as the input array. The border of the map will be filled with nan,
             because of the lack of data to calculate the border. In the future other
             behaviours might be implemented. To obtain only the useful cells the
@@ -562,8 +562,8 @@ def focal_mean(a: NDArray,
             in which case a will only contain the cells for which all data was
             present
         if ``reduce`` is True:
-            numpy ndarray of the function applied on input array ``a``. The shape
-            will be the original shape divided by the ``window_shape``. Dimensions
+            numpy ndarray of the function applied on input array ``a``. The raster_shape
+            will be the original raster_shape divided by the ``window_shape``. Dimensions
             remain equal. No border of NaN values is present.
     """
     dtype_original = a.dtype
@@ -613,7 +613,7 @@ def focal_std(a: NDArray,
         Verbosity with timing. False by default
     reduce : bool, optional
         The way in which the windowed array is created. If true, all values are used exactly once. If False (which is
-        the default), values are reduced and the output array has the same shape as the input array, albeit with a
+        the default), values are reduced and the output array has the same raster_shape as the input array, albeit with a
         border of nans where there are not enough values to calculate the cells.
     std_df : {1,0}, optional
         Degrees of freedom; meaning if the function is divided by the count of observations or the count of observations
@@ -623,7 +623,7 @@ def focal_std(a: NDArray,
     -------
     :obj:`~numpy.ndarray`
         if ``reduce`` is False:
-            numpy ndarray of the function applied to input array ``a``. The shape will
+            numpy ndarray of the function applied to input array ``a``. The raster_shape will
             be the same as the input array. The border of the map will be filled with nan,
             because of the lack of data to calculate the border. In the future other
             behaviours might be implemented. To obtain only the useful cells the
@@ -637,8 +637,8 @@ def focal_std(a: NDArray,
             in which case a will only contain the cells for which all data was
             present
         if ``reduce`` is True:
-            numpy ndarray of the function applied on input array ``a``. The shape
-            will be the original shape divided by the ``window_shape``. Dimensions
+            numpy ndarray of the function applied on input array ``a``. The raster_shape
+            will be the original raster_shape divided by the ``window_shape``. Dimensions
             remain equal. No border of NaN values is present.
     """
     dtype_original = a.dtype
@@ -690,14 +690,14 @@ def focal_sum(a: NDArray,
         Verbosity with timing. False by default
     reduce : bool, optional
         The way in which the windowed array is created. If true, all values are used exactly once. If False (which is
-        the default), values are reduced and the output array has the same shape as the input array, albeit with a
+        the default), values are reduced and the output array has the same raster_shape as the input array, albeit with a
         border of nans where there are not enough values to calculate the cells.
 
     Returns
     -------
     :obj:`~numpy.ndarray`
         if ``reduce`` is False:
-            numpy ndarray of the function applied to input array ``a``. The shape will
+            numpy ndarray of the function applied to input array ``a``. The raster_shape will
             be the same as the input array. The border of the map will be filled with nan,
             because of the lack of data to calculate the border. In the future other
             behaviours might be implemented. To obtain only the useful cells the
@@ -711,8 +711,8 @@ def focal_sum(a: NDArray,
             in which case a will only contain the cells for which all data was
             present
         if ``reduce`` is True:
-            numpy ndarray of the function applied on input array ``a``. The shape
-            will be the original shape divided by the ``window_shape``. Dimensions
+            numpy ndarray of the function applied on input array ``a``. The raster_shape
+            will be the original raster_shape divided by the ``window_shape``. Dimensions
             remain equal. No border of NaN values is present.
     """
     dtype_original = a.dtype
@@ -783,7 +783,7 @@ def focal_majority(a: NDArray,
         Verbosity with timing. False by default
     reduce : bool, optional
         The way in which the windowed array is created. If true, all values are used exactly once. If False (which is
-        the default), values are reduced and the output array has the same shape as the input array, albeit with a
+        the default), values are reduced and the output array has the same raster_shape as the input array, albeit with a
         border of nans where there are not enough values to calculate the cells.
     majority_mode : {"nan", "ascending", "descending"}, optional
         Differt modes of dealing with more than one value occuring equally often:
@@ -796,7 +796,7 @@ def focal_majority(a: NDArray,
     -------
     :obj:`~numpy.ndarray`
         if ``reduce`` is False:
-            numpy ndarray of the function applied to input array ``a``. The shape will
+            numpy ndarray of the function applied to input array ``a``. The raster_shape will
             be the same as the input array. The border of the map will be filled with nan,
             because of the lack of data to calculate the border. In the future other
             behaviours might be implemented. To obtain only the useful cells the
@@ -810,8 +810,8 @@ def focal_majority(a: NDArray,
             in which case a will only contain the cells for which all data was
             present
         if ``reduce`` is True:
-            numpy ndarray of the function applied on input array ``a``. The shape
-            will be the original shape divided by the ``window_shape``. Dimensions
+            numpy ndarray of the function applied on input array ``a``. The raster_shape
+            will be the original raster_shape divided by the ``window_shape``. Dimensions
             remain equal. No border of NaN values is present.
     """
     modes = {'nan': MajorityMode.nan,

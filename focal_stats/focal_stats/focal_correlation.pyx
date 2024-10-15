@@ -21,7 +21,7 @@ from libc.stdlib cimport free
 from libc.math cimport isnan, sqrt
 from focal_stats.window import Window, define_window, validate_window
 
-# todo; accept xarray (or anything that supports numpy indexing and shape property)
+# todo; accept xarray (or anything that supports numpy indexing and raster_shape property)
 # todo; propagate nan?
 
 
@@ -127,7 +127,7 @@ def focal_correlation(a: NDArray,
     ----------
     a, b : array-like
         Input arrays that will be correlated. If not present in dtype :obj:`~numpy.float64` it will be converted
-        internally. They have exatly the same shape and have two dimensions.
+        internally. They have exatly the same raster_shape and have two dimensions.
     window : int, array_like, Window
         Window that is applied over ``a``. It can be an integer or a sequence of integers, which will be interpreted as
         a rectangular window, a mask or a Window object.
@@ -136,15 +136,15 @@ def focal_correlation(a: NDArray,
         is 0.7.
     reduce : bool, optional
         Reuse all cells exactly once by setting a stepsize of the same size as window_shape. The resulting raster will
-        have the shape: ``shape/window_shape``
+        have the raster_shape: ``raster_shape/window_shape``
     verbose : bool, optional
         Times the correlation calculations
 
     Returns
     -------
     :obj:`~numpy.ndarray`
-        numpy array of the local correlation. If ``reduce`` is set to False, the output has the same shape as the input
-        raster, while if ``reduce`` is True, the output is reduced by the window size: ``shape // window_shape``.
+        numpy array of the local correlation. If ``reduce`` is set to False, the output has the same raster_shape as the input
+        raster, while if ``reduce`` is True, the output is reduced by the window size: ``raster_shape // window_shape``.
     """
     a = _parse_array(a)
     b = _parse_array(b)
@@ -181,7 +181,7 @@ def focal_correlation_base(a: NDArray,
     ----------
     a, b : array-like
         Input arrays that will be correlated. If not present in dtype :obj:`~numpy.float64` it will be converted
-        internally. They have exactly the same shape and have two dimensions.
+        internally. They have exactly the same raster_shape and have two dimensions.
     window : int
         Window that is applied over ``a``.
     fraction_accepted : float, optional
@@ -189,15 +189,15 @@ def focal_correlation_base(a: NDArray,
         is 0.7.
     reduce : bool, optional
         Reuse all cells exactly once by setting a stepsize of the same size as window_shape. The resulting raster will
-        have the shape: ``shape/window_shape``
+        have the raster_shape: ``raster_shape/window_shape``
     verbose : bool, optional
         Times the correlation calculations
 
     Returns
     -------
     :obj:`~numpy.ndarray`
-        numpy array of the local correlation. If ``reduce`` is set to False, the output has the same shape as the input
-        raster, while if ``reduce`` is True, the output is reduced by the window size: ``shape // window_shape``.
+        numpy array of the local correlation. If ``reduce`` is set to False, the output has the same raster_shape as the input
+        raster, while if ``reduce`` is True, the output is reduced by the window size: ``raster_shape // window_shape``.
     """
     if verbose:
         print("testing validity of request")
@@ -284,7 +284,7 @@ def focal_correlation_base(a: NDArray,
     b_dist = np.subtract(b_view, b_mean, where=sampling_mask,
                             out=np.full(shape, 0, dtype=np.float64))
 
-    # add empty dimensions (shape=1) to make it possible to broadcast
+    # add empty dimensions (raster_shape=1) to make it possible to broadcast
     a_dist = a_dist.reshape(*valid_cells.shape, window_size ** 2)
     b_dist = b_dist.reshape(*valid_cells.shape, window_size ** 2)
 

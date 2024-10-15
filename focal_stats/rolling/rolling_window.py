@@ -24,23 +24,23 @@ def rolling_window(a: NDArray, *,
         Input array
     window : int, array_like, Window
         Window that is applied over ``a``. It can be an integer or a sequence of integers, which will be interpreted as
-        a rectangular window, a mask or a window object. If a mask is provided, its shape will be used to flatten ``a``,
+        a rectangular window, a mask or a window object. If a mask is provided, its raster_shape will be used to flatten ``a``,
         resulting in dimensionality ``a.ndim + 1`` as the final result, just as in the case of `flatten` is True.
     flatten : bool, optional
-        Flag to flatten the windowed view to 1 dimension. The shape of the returned array if set to True will be:
+        Flag to flatten the windowed view to 1 dimension. The raster_shape of the returned array if set to True will be:
 
             *reduce* == False:
-                shape : (s - window_size + 1) + (np.prod(window_size),)
+                raster_shape : (s - window_shape + 1) + (np.prod(window_shape),)
             *reduce* == True:
-                shape : (s // window_size) + (np.prod(window_size),)
+                raster_shape : (s // window_shape) + (np.prod(window_shape),)
 
-        If set to False (which is the default) the shape of the window will not change and the data will be added in as
-        many dimensions as the input array. The shape will be:
+        If set to False (which is the default) the raster_shape of the window will not change and the data will be added in as
+        many dimensions as the input array. The raster_shape will be:
 
             *reduce* == False:
-                shape : (s - window_size + 1) + (window_size)
+                raster_shape : (s - window_shape + 1) + (window_shape)
             *reduce* == True:
-                shape : (s // window_size) + (window_size)
+                raster_shape : (s // window_shape) + (window_shape)
 
         False has the nice property of returning a view, not copying the data while if True is passed, all the data will
         be copied. This can be very slow and memory intensive for large arrays.
@@ -60,8 +60,8 @@ def rolling_window(a: NDArray, *,
     Raises
     ------
     ValueError
-        - window_size too bigger than on of the dimensions of the input array
-        - if reduce is True, the window_size needs to be an exact divisor for all dimensions of the input array
+        - window_shape too bigger than on of the dimensions of the input array
+        - if reduce is True, the window_shape needs to be an exact divisor for all dimensions of the input array
     """
     a = np.asarray(a)
     shape = np.asarray(a.shape)
@@ -80,7 +80,7 @@ def rolling_window(a: NDArray, *,
         output_shape = np.r_[shape - window_shape + 1, window_shape]
         output_strides = np.r_[strides, strides]
 
-    # create view on the data with new shape and strides
+    # create view on the data with new raster_shape and strides
     strided_a = as_strided(a, shape=output_shape.astype(int), strides=output_strides.astype(int), **kwargs)
 
     if window.masked or flatten:
