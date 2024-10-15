@@ -16,10 +16,12 @@ jobs:
       - name: Setup micromamba and install dependencies
         uses: mamba-org/setup-micromamba@v2
         with:
+          init-shell: bash
           environment-name: focal-stats-env
           environment-file: environment.yml
 
       - name: Locally install focal-stats
+        shell: bash -l {0}
         run: |
           micromamba activate focal-stats-env
           python -m pip install .
