@@ -3,7 +3,6 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - cibuildwheel
   - cython
   - pytest
   - scipy
