@@ -1,6 +1,8 @@
 name: push
+description: Build and test on push
 
-on: 
+
+on:
   push:
     branches:
       - master
@@ -11,5 +13,9 @@ on:
       - .gitignore
 
 jobs:
-  push:
+  test:
+    name: Run tests
+    uses: ./.github/workflows/test.yml
+  build:
+    name: Build the package for different python versions and operation systems
     uses: ./.github/workflows/build.yml
