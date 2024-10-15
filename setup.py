@@ -29,12 +29,12 @@ setup(
     author_email='roebroek.jasper@gmail.com',
     ext_modules=cythonize(extensions),
     include_dirs=[numpy.get_include()],
-    setup_requires=['cython', 'numpy', 'setuptools'],
+    setup_requires=['cython', 'numpy', 'setuptools', 'rasterio'],
     install_requires=['numpy'],
     extras_require={
         'develop': ['cython', 'sphinx', 'sphinx_rtd_theme', 'numpydoc', 'scipy', 'jupyter', 'matplotlib',
                     'pytest', 'joblib'],
-        'test': ['scipy', 'pytest', 'rasterio']},
+        'test': ['scipy', 'pytest']},
     long_description=read_file('README.md'),
     long_description_content_type='text/markdown',
 )

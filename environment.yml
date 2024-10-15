@@ -9,3 +9,4 @@ dependencies:
   - joblib
   - numpydantic
   - pandas
+  - rasterio
