@@ -27,14 +27,19 @@ jobs:
           python -m pip install .
 
       - name: Run tests
-        run: micromamba run -n focal-stats-env python -m pytest tests
+        shell: bash -l {0}
+        run: |
+          micromamba activate focal-stats-env
+          python -m pytest tests
 
       - name: Install cibuildwheel
+        shell: bash -l {0}
         run: |
           micromamba activate focal-stats-env
           python -m pip install cibuildwheel
 
       - name: Build wheels
+        shell: bash -l {0}
         run: micromamba run -n focal-stats-env python -m cibuildwheel --output-dir wheelhouse
         env:
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.9"
