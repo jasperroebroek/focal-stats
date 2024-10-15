@@ -1,0 +1,9 @@
+name: focal_stats
+dependencies:
+  - cibuildwheel
+  - cython
+  - pytest
+  - scipy
+  - joblib
+  - numpydantic
+  - pandas
