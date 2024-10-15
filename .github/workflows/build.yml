@@ -20,13 +20,17 @@ jobs:
           environment-file: environment.yml
 
       - name: Locally install focal-stats
-        run: micromamba run -n focal-stats-env python -m pip install .
+        run: |
+          micromamba activate focal-stats-env
+          python -m pip install .
 
       - name: Run tests
         run: micromamba run -n focal-stats-env python -m pytest tests
 
       - name: Install cibuildwheel
-        run: micromamba run -n focal-stats-env python -m pip cibuildwheel
+        run: |
+          micromamba activate focal-stats-env
+          python -m pip install cibuildwheel
 
       - name: Build wheels
         run: micromamba run -n focal-stats-env python -m cibuildwheel --output-dir wheelhouse
