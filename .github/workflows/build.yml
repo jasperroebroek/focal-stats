@@ -26,7 +26,7 @@ jobs:
         run: micromamba run -n focal-stats-env python -m pytest tests
 
       - name: Install cibuildwheel
-      - run: micromamba run -n focal-stats-env python -m pip cibuildwheel
+        run: micromamba run -n focal-stats-env python -m pip cibuildwheel
 
       - name: Build wheels
         run: micromamba run -n focal-stats-env python -m cibuildwheel --output-dir wheelhouse
