@@ -1,7 +1,7 @@
 import numpy
 from Cython.Build import cythonize
 from distutils.extension import Extension
-from setuptools import setup
+from setuptools import find_packages, setup
 
 extensions = [
     Extension(
@@ -16,6 +16,7 @@ extensions = [
 ]
 
 setup(
+    packages=find_packages(),
     ext_modules=cythonize(extensions),
     include_dirs=[numpy.get_include()],
 )
