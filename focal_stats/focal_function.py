@@ -24,7 +24,7 @@ class MemmapContext(BaseModel):
         if self.reduce:
             self.memmap_shape = (
                 self.raster_shape[0] // self.window_shape[0],
-                self.raster_shape[1] // self.window_shape[1]
+                self.raster_shape[1] // self.window_shape[1],
             )
         else:
             self.memmap_shape = self.raster_shape
@@ -35,8 +35,13 @@ class MemmapContext(BaseModel):
     def create(self) -> np.memmap:
         if not self.open:
             self.open = True
-            self.temp_file = tempfile.NamedTemporaryFile(mode='w+')
-            self.memmap = np.memmap(filename=self.temp_file.name, dtype=self.dtype, mode='w+', shape=self.memmap_shape)
+            self.temp_file = tempfile.NamedTemporaryFile(mode="w+")
+            self.memmap = np.memmap(
+                filename=self.temp_file.name,
+                dtype=self.dtype,
+                mode="w+",
+                shape=self.memmap_shape,
+            )
 
         return self.memmap
 
@@ -72,33 +77,40 @@ class OutputDict:
             self.contexts[key].close()
 
 
-def process_window(fn: Callable,
-                   inputs: Dict[str, NDArray],
-                   outputs: Dict[str, NDArray],
-                   windows: RasterWindowPair,
-                   **kwargs) -> None:
+def process_window(
+    fn: Callable,
+    inputs: Dict[str, NDArray],
+    outputs: Dict[str, NDArray],
+    windows: RasterWindowPair,
+    **kwargs,
+) -> None:
     input_slices = windows.input.slices
     print({key: inputs[key][..., input_slices[0], input_slices[1]] for key in inputs})
-    result = fn(**{key: inputs[key][..., input_slices[0], input_slices[1]] for key in inputs}, **kwargs)
+    result = fn(
+        **{key: inputs[key][..., input_slices[0], input_slices[1]] for key in inputs},
+        **kwargs,
+    )
 
     for key in outputs:
         output_slices = windows.output.slices
         outputs[key][..., output_slices[0], output_slices[1]] = result[key]
 
 
-@validate_call(config={'arbitrary_types_allowed': True})
+@validate_call(config={"arbitrary_types_allowed": True})
 @timeit
-def focal_function(fn: Callable,
-                   inputs: Dict[str, NDArray],
-                   outputs: Dict[str, NDArray],
-                   window: PositiveInt | Sequence[PositiveInt] | Mask | Window,
-                   reduce: bool = False,
-                   # joblib Parallel arg
-                   n_jobs: PositiveInt = 1,
-                   verbose: bool = False,
-                   prefer: Literal['threads', 'processes'] = 'threads',
-                   # kwargs go to fn
-                   **kwargs) -> None:
+def focal_function(
+    fn: Callable,
+    inputs: Dict[str, NDArray],
+    outputs: Dict[str, NDArray],
+    window: PositiveInt | Sequence[PositiveInt] | Mask | Window,
+    reduce: bool = False,
+    # joblib Parallel arg
+    n_jobs: PositiveInt = 1,
+    verbose: bool = False,
+    prefer: Literal["threads", "processes"] = "threads",
+    # kwargs go to fn
+    **kwargs,
+) -> None:
     """Focal statistics with an arbitrary function. prefer 'threads' always works, 'processes' only works with memmaps,
     but provides potentially large speed-ups"""
     raster_shapes = []
@@ -110,23 +122,34 @@ def focal_function(fn: Callable,
 
     for s in raster_shapes:
         if not s == raster_shapes[0]:
-            raise IndexError(f'Not all input rasters have the same shape: {raster_shapes}')
+            raise IndexError(
+                f"Not all input rasters have the same shape: {raster_shapes}"
+            )
 
     window = define_window(window)
-    validate_window(window, raster_shapes[0], reduce)
+    print(str(window))
+    validate_window(window, raster_shapes[0], reduce, allow_even=False)
     window_shape = window.get_shape(2)
 
     for key in outputs:
         shape = outputs[key].shape[-2:]
         if (
-                reduce and (raster_shapes[0][0] // window_shape[0], raster_shapes[0][1] // window_shape[1]) != shape or
-                not reduce and shape != raster_shapes[0]
+            reduce
+            and (
+                raster_shapes[0][0] // window_shape[0],
+                raster_shapes[0][1] // window_shape[1],
+            )
+            != shape
+            or not reduce
+            and shape != raster_shapes[0]
         ):
-            raise IndexError(f"Output shapes not matching input shapes: {raster_shapes[0]} {shape}")
+            raise IndexError(
+                f"Output shapes not matching input shapes: {raster_shapes[0]} {shape}"
+            )
 
     window_pairs = construct_windows(raster_shapes[0], window_shape, reduce)
 
-    Parallel(n_jobs=n_jobs, verbose=verbose, prefer=prefer, mmap_mode='r+')(
-        delayed(process_window)(
-            fn, inputs, outputs, wp, **kwargs) for wp in window_pairs
+    Parallel(n_jobs=n_jobs, verbose=verbose, prefer=prefer, mmap_mode="r+")(
+        delayed(process_window)(fn, inputs, outputs, wp, **kwargs)
+        for wp in window_pairs
     )

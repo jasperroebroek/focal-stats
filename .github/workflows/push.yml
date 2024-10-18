@@ -17,5 +17,5 @@ jobs:
     name: Run tests
     uses: ./.github/workflows/test.yml
   build:
-    name: Build the package for different python versions and operation systems
+    name: Build wheels
     uses: ./.github/workflows/build.yml

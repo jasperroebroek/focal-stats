@@ -31,7 +31,9 @@ class RectangularWindow(Window, BaseModel):
             return (self.window_size,) * ndim
 
         if len(self.window_size) != ndim:
-            raise IndexError(f"dimensions do not match the size of the window: {ndim=} {self.window_size=}")
+            raise IndexError(
+                f"dimensions do not match the size of the window: {ndim=} {self.window_size=}"
+            )
 
         return self.window_size
 
@@ -48,7 +50,9 @@ class MaskedWindow(Window, BaseModel):
 
     def match_shape(self, ndim: PositiveInt) -> None:
         if self.mask.ndim != ndim:
-            raise IndexError(f"dimensions do not match the size of the mask: {ndim=} {self.mask.ndim=}")
+            raise IndexError(
+                f"dimensions do not match the size of the mask: {ndim=} {self.mask.ndim=}"
+            )
 
     def get_shape(self, ndim: PositiveInt) -> Shape:
         self.match_shape(ndim)
@@ -71,11 +75,15 @@ def define_window(window: PositiveInt | Shape | Mask | Window) -> Window:
     if isinstance(window, (int, Sequence)):
         return RectangularWindow(window_size=window)
 
-    raise TypeError(f"Window can't be parsed from {window}. Must be int, sequence of int or binary array")
+    raise TypeError(
+        f"Window can't be parsed from {window}. Must be int, sequence of int or binary array"
+    )
 
 
-@validate_call(config={'arbitrary_types_allowed': True})
-def validate_window(window: Window, shape: NDArray[Any, int], reduce: bool, allow_even: bool = True) -> None:
+@validate_call(config={"arbitrary_types_allowed": True})
+def validate_window(
+    window: Window, shape: NDArray[Any, int], reduce: bool, allow_even: bool = True
+) -> None:
     shape = np.asarray(shape)
     window_shape = np.asarray(window.get_shape(shape.size))
 
@@ -87,7 +95,7 @@ def validate_window(window: Window, shape: NDArray[Any, int], reduce: bool, allo
             raise ValueError("not all dimensions are divisible by window_shape")
 
     if not allow_even and not reduce:
-        if not np.all(window_shape % 2):
+        if np.all(window_shape % 2 == 0):
             raise ValueError("Uneven window size is not allowed when not reducing")
 
     if np.all(window_shape == 1):
@@ -109,4 +117,4 @@ def define_ind_inner(window: Window, reduce: bool) -> tuple[slice, slice]:
         return np.s_[:, :]
 
     fringes = define_fringes(window, reduce)
-    return np.s_[fringes[0]:-fringes[0], fringes[1]:-fringes[1]]
+    return np.s_[fringes[0] : -fringes[0], fringes[1] : -fringes[1]]

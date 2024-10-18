@@ -9,11 +9,13 @@ from focal_stats.types import Mask, PositiveInt
 from focal_stats.window import Window, define_window, validate_window
 
 
-@validate_call(config={'arbitrary_types_allowed': True})
-def rolling_sum(a: NDArray,
-                *,
-                window: PositiveInt | Sequence[PositiveInt] | Mask | Window,
-                reduce: bool = False) -> NDArray:
+@validate_call(config={"arbitrary_types_allowed": True})
+def rolling_sum(
+    a: NDArray,
+    *,
+    window: PositiveInt | Sequence[PositiveInt] | Mask | Window,
+    reduce: bool = False,
+) -> NDArray:
     """
     Takes an array and returns the rolling sum. Not suitable for arrays with NaN values.
 
@@ -78,11 +80,13 @@ def rolling_sum(a: NDArray,
     return r[s]
 
 
-@validate_call(config={'arbitrary_types_allowed': True})
-def rolling_mean(a: NDArray,
-                 *,
-                 window: PositiveInt | Sequence[PositiveInt] | Mask | Window,
-                 reduce: bool = False) -> NDArray:
+@validate_call(config={"arbitrary_types_allowed": True})
+def rolling_mean(
+    a: NDArray,
+    *,
+    window: PositiveInt | Sequence[PositiveInt] | Mask | Window,
+    reduce: bool = False,
+) -> NDArray:
     """
     Takes an array and returns the rolling mean. Not suitable for arrays with NaN values.
 

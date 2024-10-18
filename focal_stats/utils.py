@@ -18,10 +18,10 @@ def timeit(func):
         end_time = time.perf_counter()
         total_time = end_time - start_time
 
-        verbose = kwargs.get('verbose', False)
+        verbose = kwargs.get("verbose", False)
 
         if verbose:
-            print(f'{func.__name__}{args}{kwargs} Took {total_time:.4f} seconds')
+            print(f"{func.__name__}{args}{kwargs} Took {total_time:.4f} seconds")
 
         return result
 
@@ -36,26 +36,29 @@ def _parse_array(a: NDArray) -> RasterFloat64:
     return a_parsed
 
 
-def _parse_nans(a: RasterFloat64, dtype_original: DTypeLike) -> Tuple[bool, bool, RasterBool]:
+def _parse_nans(
+    a: RasterFloat64, dtype_original: DTypeLike
+) -> Tuple[bool, bool, RasterBool]:
     if not np.issubdtype(dtype_original, np.floating):
         return False, False, np.zeros(a.shape, dtype=np.bool_)
 
     nan_mask = np.isnan(a)
-    empty_flag = ((~nan_mask).sum() == 0)
-    nan_flag = (nan_mask.sum() > 0)
+    empty_flag = (~nan_mask).sum() == 0
+    nan_flag = nan_mask.sum() > 0
 
     return empty_flag, nan_flag, nan_mask
 
 
-def _create_output_array(a: RasterFloat64, window_shape: RasterWindowShape, reduce: bool) -> RasterFloat64:
+def _create_output_array(
+    a: RasterFloat64, window_shape: RasterWindowShape, reduce: bool
+) -> RasterFloat64:
     shape = list(np.asarray(a.shape) // window_shape) if reduce else a.shape
     return np.full(shape, dtype=np.float64, fill_value=np.nan)
 
 
-def _calc_count_values(window: Window,
-                       nan_mask: RasterBool,
-                       reduce: bool,
-                       ind_inner: Tuple[slice, slice]) -> RasterFloat64:
+def _calc_count_values(
+    window: Window, nan_mask: RasterBool, reduce: bool, ind_inner: Tuple[slice, slice]
+) -> RasterFloat64:
     from focal_stats.focal_stats.focal_statistics import focal_sum
     from focal_stats.rolling.rolling_stats import rolling_sum
 
@@ -72,14 +75,14 @@ def _calc_count_values(window: Window,
     return count_values
 
 
-def _calc_below_fraction_accepted_mask(window: Window,
-                                       nan_mask: RasterBool,
-                                       ind_inner: Tuple[slice, slice],
-                                       fraction_accepted: Fraction,
-                                       reduce: bool) -> RasterBool:
+def _calc_below_fraction_accepted_mask(
+    window: Window,
+    nan_mask: RasterBool,
+    ind_inner: Tuple[slice, slice],
+    fraction_accepted: Fraction,
+    reduce: bool,
+) -> RasterBool:
     threshold = fraction_accepted * window.get_mask(2).sum()
-    count_values = _calc_count_values(
-        window, nan_mask, reduce, ind_inner
-    )
+    count_values = _calc_count_values(window, nan_mask, reduce, ind_inner)
 
     return count_values < threshold

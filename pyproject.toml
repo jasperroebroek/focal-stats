@@ -1,5 +1,10 @@
 [build-system]
-requires = ["setuptools", "wheel", "cython", "numpy"]
+requires = [
+    "setuptools",
+    "wheel",
+    "cython",
+    "numpy"
+]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -9,20 +14,42 @@ description = ""
 authors = [
     { name = "Jasper Roebroek", email = "roebroek.jasper@gmail.com" }
 ]
-license =  { file = "LICENSE" }
+license = { file = "LICENSE" }
 readme = "README.md"
 
 dependencies = [
     "numpy",
-    "pydantic",
-    "joblib"
+    "numpydantic",
+    "joblib",
+    "pandas"
 ]
 requires-python = ">=3.9"
 
 [project.optional-dependencies]
-documentation = ['sphinx', 'sphinx_rtd_theme', 'numpydoc', 'jupyter', 'matplotlib']
-develop = ["cython", "sphinx", "sphinx_rtd_theme", "numpydoc", "scipy", "jupyter", "matplotlib", "pytest", "joblib"]
-test = ["scipy", "pytest"]
+documentation = [
+    'sphinx',
+    'sphinx_rtd_theme',
+    'numpydoc',
+    'jupyter',
+    'matplotlib'
+]
+develop = [
+    "cython",
+    "sphinx",
+    "sphinx_rtd_theme",
+    "numpydoc",
+    "scipy",
+    "jupyter",
+    "matplotlib",
+    "pytest",
+    "joblib",
+    "statsmodels"
+]
+test = [
+    "scipy",
+    "pytest",
+    "statsmodels"
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -1,5 +1,3 @@
-from multiprocessing.managers import Value
-
 import numpy as np
 import pytest
 from scipy.stats import pearsonr
@@ -94,7 +92,9 @@ def focal_correlation_simple(map1, map2, window=5, fraction_accepted=0.7):
 
     for i in range(fringes[0], map1.shape[0] - fringes[0]):
         for j in range(fringes[1], map1.shape[1] - fringes[1]):
-            ind = np.s_[i - fringes[0]:i + fringes[0] + 1, j - fringes[1]:j + fringes[1] + 1]
+            ind = np.s_[
+                i - fringes[0] : i + fringes[0] + 1, j - fringes[1] : j + fringes[1] + 1
+            ]
 
             if np.isnan(map1[i, j]) or np.isnan(map2[i, j]):
                 continue
@@ -124,19 +124,19 @@ def test_correlation_values():
     # Cython implementation
     assert np.allclose(
         pearsonr(a.flatten(), b.flatten())[0],
-        focal_correlation(a, b, window=5, reduce=True)
+        focal_correlation(a, b, window=5, reduce=True),
     )
 
     # Numpy implementation
     assert np.allclose(
         pearsonr(a.flatten(), b.flatten())[0],
-        focal_correlation_base(a, b, window=5)[2, 2]
+        focal_correlation_base(a, b, window=5)[2, 2],
     )
 
     # Local implementation
     assert np.allclose(
         pearsonr(a.flatten(), b.flatten())[0],
-        focal_correlation_simple(a, b, window=5)[2, 2]
+        focal_correlation_simple(a, b, window=5)[2, 2],
     )
 
 
@@ -146,15 +146,11 @@ def test_correlation_values_large():
     b = np.random.rand(25, 25)
 
     assert np.allclose(
-        focal_correlation(a, b),
-        focal_correlation_simple(a, b),
-        equal_nan=True
+        focal_correlation(a, b), focal_correlation_simple(a, b), equal_nan=True
     )
 
     assert np.allclose(
-        focal_correlation_base(a, b),
-        focal_correlation_simple(a, b),
-        equal_nan=True
+        focal_correlation_base(a, b), focal_correlation_simple(a, b), equal_nan=True
     )
 
 
@@ -166,7 +162,7 @@ def test_correlation_values_mask():
     assert np.allclose(
         focal_correlation(a, b, window=window, fraction_accepted=0),
         focal_correlation_simple(a, b, window=window),
-        equal_nan=True
+        equal_nan=True,
     )
 
 
@@ -178,8 +174,9 @@ def test_correlation_values_mask_reduce():
     assert np.allclose(
         focal_correlation(a, b, window=window, fraction_accepted=0, reduce=True),
         focal_correlation_simple(a, b, window=window)[2, 2],
-        equal_nan=True
+        equal_nan=True,
     )
+
 
 def test_correlation_shape():
     a = np.random.rand(10, 10)
@@ -191,10 +188,14 @@ def test_correlation_shape():
 
 def test_correlation_errors():
     with pytest.raises(ValueError):
-        focal_correlation(np.random.rand(10, 10), np.random.rand(10, 10), window=5, verbose=2)
+        focal_correlation(
+            np.random.rand(10, 10), np.random.rand(10, 10), window=5, verbose=2
+        )
 
     with pytest.raises(ValueError):
-        focal_correlation(np.random.rand(10, 10), np.random.rand(10, 10), window=5, reduce=2)
+        focal_correlation(
+            np.random.rand(10, 10), np.random.rand(10, 10), window=5, reduce=2
+        )
 
     # not 2D
     with pytest.raises(IndexError):
@@ -250,13 +251,17 @@ def test_nan_behaviour():
     a = np.random.rand(5, 5)
     b = np.random.rand(5, 5)
     a[2, 2] = np.nan
-    assert np.allclose(focal_correlation(a, b), focal_correlation_simple(a, b), equal_nan=True)
+    assert np.allclose(
+        focal_correlation(a, b), focal_correlation_simple(a, b), equal_nan=True
+    )
     assert np.isnan(focal_correlation(a, b)[2, 2])
 
     a = np.random.rand(5, 5)
     b = np.random.rand(5, 5)
     a[1, 1] = np.nan
-    assert np.allclose(focal_correlation(a, b), focal_correlation_simple(a, b), equal_nan=True)
+    assert np.allclose(
+        focal_correlation(a, b), focal_correlation_simple(a, b), equal_nan=True
+    )
     assert not np.isnan(focal_correlation(a, b)[2, 2])
     assert np.isnan(focal_correlation(a, b, fraction_accepted=1)[2, 2])
     assert not np.isnan(focal_correlation(a, b, fraction_accepted=0)[2, 2])
@@ -270,6 +275,7 @@ def test_correlation_dtype():
     a = np.random.rand(5, 5).astype(np.float64)
     b = np.random.rand(5, 5).astype(np.float64)
     assert focal_correlation(a, b).dtype == np.float64
+
 
 # def test_correlation_against_base():
 #     import rasterio as rio

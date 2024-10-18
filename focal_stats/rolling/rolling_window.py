@@ -9,12 +9,15 @@ from focal_stats.types import Mask, PositiveInt
 from focal_stats.window import Window, define_window, validate_window
 
 
-@validate_call(config={'arbitrary_types_allowed': True})
-def rolling_window(a: NDArray, *,
-                   window: PositiveInt | Sequence[PositiveInt] | Mask | Window,
-                   flatten: bool = False,
-                   reduce: bool = False,
-                   **kwargs) -> NDArray:
+@validate_call(config={"arbitrary_types_allowed": True})
+def rolling_window(
+    a: NDArray,
+    *,
+    window: PositiveInt | Sequence[PositiveInt] | Mask | Window,
+    flatten: bool = False,
+    reduce: bool = False,
+    **kwargs,
+) -> NDArray:
     """
     Takes an array and returns a windowed version
 
@@ -81,7 +84,9 @@ def rolling_window(a: NDArray, *,
         output_strides = np.r_[strides, strides]
 
     # create view on the data with new raster_shape and strides
-    strided_a = as_strided(a, shape=output_shape.astype(int), strides=output_strides.astype(int), **kwargs)
+    strided_a = as_strided(
+        a, shape=output_shape.astype(int), strides=output_strides.astype(int), **kwargs
+    )
 
     if window.masked or flatten:
         return strided_a[..., window.get_mask(a.ndim)]
