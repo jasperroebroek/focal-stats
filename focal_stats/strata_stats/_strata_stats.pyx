@@ -31,12 +31,12 @@ StrataLinearRegressionResult = namedtuple('StrataLinearRegressionResult',
                                           ['a', 'b', 'se_a', 'se_b', 'p_a', 'p_b'])
 
 
-cdef int _apply(size_t[:] ind,
-                float[:] v,
-                float[:, ::1] target,
-                long rows,
-                long cols,
-                float* (*f)(size_t[:], float[:], size_t) except * nogil) except * nogil:
+cdef int _apply_to_target(size_t[:] ind,
+                          float[:] v,
+                          float[:, ::1] target,
+                          long rows,
+                          long cols,
+                          float* (*f)(size_t[:], float[:], size_t) nogil) nogil:
     cdef:
         size_t i, j, c
         size_t max_ind
@@ -56,15 +56,15 @@ cdef int _apply(size_t[:] ind,
 
 
 cdef float[:, ::1] _apply_values_to_raster_float32(size_t[:] ind,
-                                     float[:] v,
-                                     long rows,
-                                     long cols,
-                                     float* (*f)(size_t[:], float[:], size_t) except * nogil):
+                                                   float[:] v,
+                                                   long rows,
+                                                   long cols,
+                                                   float* (*f)(size_t[:], float[:], size_t) except * nogil):
     cdef:
         float[:, ::1] r = np.full((rows, cols), dtype=np.float32, fill_value=np.nan)
 
     with nogil:
-        _apply(ind, v, r, rows=rows, cols=cols, f=f)
+        _apply_to_target(ind, v, r, rows=rows, cols=cols, f=f)
 
     return r
 

@@ -33,7 +33,7 @@ cdef CyGroupedLinearRegressionResult _grouped_linear_regression(size_t[:] ind,
                                                                 float[:] v2,
                                                                 size_t max_ind) except * nogil:
     cdef:
-        int i, k, n = ind.shape[0]
+        size_t i, k, n = ind.shape[0]
         float residual
         long *count = <long *> calloc(max_ind + 1, sizeof(long))
         float *sum_v1 = <float *> calloc(max_ind + 1, sizeof(float))

@@ -19,7 +19,7 @@ cdef size_t _define_max_ind(size_t[:] ind) noexcept nogil:
     return max_ind
 
 
-cdef long* _grouped_count(size_t[:] ind, float[:] v, size_t max_ind) except * nogil:
+cdef long* _grouped_count(size_t[:] ind, float[:] v, size_t max_ind) nogil:
     cdef:
         size_t i, n = ind.shape[0]
         long *count_v = <long *> calloc(max_ind + 1, sizeof(long))
@@ -47,7 +47,7 @@ def define_max_ind(size_t[:] ind):
     return max_ind
 
 
-def grouped_count_npy(size_t[:] ind, float[:] v):
+def grouped_count_npy(size_t[:] ind, float[:] v) -> np.ndarray:
     cdef:
         size_t max_ind
         long* r
@@ -62,7 +62,7 @@ def grouped_count_npy(size_t[:] ind, float[:] v):
     return result_array
 
 
-def grouped_count_npy_filtered(size_t[:] ind, float[:] v):
+def grouped_count_npy_filtered(size_t[:] ind, float[:] v) -> np.ndarray:
     cdef:
         size_t i, max_ind, c = 0, num_inds = 0
         long *r, *rf
@@ -80,7 +80,7 @@ def grouped_count_npy_filtered(size_t[:] ind, float[:] v):
                     rf[c] = r[i]
                     c += 1
 
-        result_array = cnp.PyArray_SimpleNewFromData(1, [num_inds], cnp.NPY_LONG, <void *> rf)
+        result_array = cnp.PyArray_SimpleNewFromData(1, [num_inds], cnp.NPY_LONG, rf)
         cnp.PyArray_ENABLEFLAGS(result_array, cnp.NPY_ARRAY_OWNDATA)
 
     finally:

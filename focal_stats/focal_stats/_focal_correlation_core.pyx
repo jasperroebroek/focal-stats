@@ -13,12 +13,12 @@ from libc.stdlib cimport free
 from libc.math cimport isnan, sqrt
 
 cpdef double[:, ::1] _correlate_rasters(double[:, ::1] a,
-                                       double[:, ::1] b,
-                                       int[:] window_shape,
-                                       np.npy_uint8[:, ::1] mask,
-                                       double fraction_accepted,
-                                       bint reduce,
-                                       ):
+                                        double[:, ::1] b,
+                                        int[:] window_shape,
+                                        np.npy_uint8[:, ::1] mask,
+                                        double fraction_accepted,
+                                        bint reduce,
+                                        ):
     cdef:
         size_t p, q, i, j, x, y
         double[:, ::1] corr

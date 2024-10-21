@@ -28,7 +28,7 @@ cdef CyGroupedCorrelationResult _grouped_correlation(size_t[:] ind,
                                                      float[:] v2,
                                                      size_t max_ind) except * nogil:
     cdef:
-        int i, k, n = ind.shape[0]
+        size_t i, k, n = ind.shape[0]
         long *count = <long *> calloc(max_ind + 1, sizeof(long))
         float *sum_v1 = <float *> calloc(max_ind + 1, sizeof(float))
         float *sum_v2 = <float *> calloc(max_ind + 1, sizeof(float))

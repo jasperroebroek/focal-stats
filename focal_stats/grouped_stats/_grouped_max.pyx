@@ -11,7 +11,7 @@ cimport numpy as cnp
 from ._grouped_count cimport _define_max_ind, _grouped_count
 
 
-cdef float* _grouped_max(size_t[:] ind, float[:] v, size_t max_ind) except * nogil:
+cdef float* _grouped_max(size_t[:] ind, float[:] v, size_t max_ind) nogil:
     cdef:
         size_t i, k, n = ind.shape[0]
         float *max_v = <float *> malloc((max_ind + 1) * sizeof(float))
@@ -41,7 +41,7 @@ cdef float* _grouped_max(size_t[:] ind, float[:] v, size_t max_ind) except * nog
 def grouped_max_npy(size_t[:] ind, float[:] v) -> np.ndarray:
     cdef:
         size_t max_ind
-        float* r
+        float *r
 
     with nogil:
         max_ind = _define_max_ind(ind)
@@ -56,9 +56,9 @@ def grouped_max_npy(size_t[:] ind, float[:] v) -> np.ndarray:
 def grouped_max_npy_filtered(size_t[:] ind, float[:] v) -> np.ndarray:
     cdef:
         size_t i, max_ind, c = 0, num_inds = 0
-        long* count_v
-        float* r_v
-        float* rf_v
+        long *count_v
+        float *r_v
+        float *rf_v
 
     try:
         with nogil:
@@ -81,7 +81,7 @@ def grouped_max_npy_filtered(size_t[:] ind, float[:] v) -> np.ndarray:
                     rf_v[c] = r_v[i]
                     c += 1
 
-        result_array = cnp.PyArray_SimpleNewFromData(1, [num_inds], cnp.NPY_FLOAT, <void *> rf_v)
+        result_array = cnp.PyArray_SimpleNewFromData(1, [num_inds], cnp.NPY_FLOAT, rf_v)
         cnp.PyArray_ENABLEFLAGS(result_array, cnp.NPY_ARRAY_OWNDATA)
 
     finally:

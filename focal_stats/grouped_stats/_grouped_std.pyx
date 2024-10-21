@@ -13,7 +13,7 @@ from ._grouped_count cimport _define_max_ind, _grouped_count
 from ._grouped_mean cimport _grouped_mean
 
 
-cdef float* _grouped_std(size_t[:] ind, float[:] v, float *mean_v, size_t max_ind) except * nogil:
+cdef float* _grouped_std(size_t[:] ind, float[:] v, float *mean_v, size_t max_ind) nogil:
     cdef:
         size_t i, k, n = ind.shape[0]
         long *num_v = <long *> calloc(max_ind + 1, sizeof(long))
@@ -67,7 +67,7 @@ def grouped_std_npy(size_t[:] ind, float[:] v) -> np.ndarray:
 def grouped_std_npy_filtered(size_t[:] ind, float[:] v) -> np.ndarray:
     cdef:
         size_t i, max_ind, c = 0, num_inds = 0
-        long* count_v
+        long *count_v
         float *r_v, *mean_v, *rf_v
 
     try:

@@ -11,7 +11,7 @@ cimport numpy as cnp
 from ._grouped_count cimport _define_max_ind, _grouped_count
 
 
-cdef float* _grouped_min(size_t[:] ind, float[:] v, size_t max_ind) except * nogil:
+cdef float* _grouped_min(size_t[:] ind, float[:] v, size_t max_ind) nogil:
     cdef:
         size_t i, k, n = ind.shape[0]
         float *min_v = <float *> malloc((max_ind + 1) * sizeof(float))
@@ -56,9 +56,9 @@ def grouped_min_npy(size_t[:] ind, float[:] v) -> np.ndarray:
 def grouped_min_npy_filtered(size_t[:] ind, float[:] v) -> np.ndarray:
     cdef:
         size_t i, max_ind, c = 0, num_inds = 0
-        long* count_v
-        float* r_v
-        float* rf_v
+        long *count_v
+        float *r_v
+        float *rf_v
 
     try:
         with nogil:

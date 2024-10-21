@@ -7,8 +7,13 @@ on:
   workflow_dispatch:
 
 jobs:
+  test:
+    name: Run tests
+    uses: ./.github/workflows/test.yml
+
   build:
-    uses: ./.github/workflows/build.yml  # use the callable tests job to run tests
+    name: Build wheels
+    uses: ./.github/workflows/build.yml
 
   build_sdist:
     name: Build source distribution
@@ -25,7 +30,7 @@ jobs:
           path: dist/*.tar.gz
 
   upload_pypi:
-    needs: [ build, build_sdist ]
+    needs: [ test, build, build_sdist ]
     runs-on: ubuntu-latest
     environment:
       name: pypi
