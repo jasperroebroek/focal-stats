@@ -5,7 +5,7 @@ import numpy as np
 from numpydantic import NDArray
 from pydantic import validate_call
 
-from focal_stats import rolling_sum, rolling_window
+from focal_stats.rolling import rolling_sum, rolling_window
 from focal_stats.focal_stats._focal_correlation_core import _correlate_rasters
 from focal_stats.types import Fraction, Mask, PositiveInt, RasterFloat64
 from focal_stats.utils import _parse_array, timeit

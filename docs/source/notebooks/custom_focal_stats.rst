@@ -41,7 +41,7 @@ Inspecting the data
 
 .. parsed-literal::
 
-    <matplotlib.colorbar.Colorbar at 0x7f099f322d90>
+    <matplotlib.colorbar.Colorbar at 0x148b2d010>
 
 
 
@@ -56,7 +56,7 @@ Firstly, a windowed version of the input raster needs to be defined.
 
 .. code:: python
 
-    a_windowed = focal_stats.rolling_window(a, window_size=5)
+    a_windowed = focal_stats.rolling_window(a, window=5)
     print(a.shape, a_windowed.shape)
 
 
@@ -77,7 +77,7 @@ continuing with the closest values.
 .. code:: python
 
     a_padded = np.pad(a, pad_width=2, mode='edge')
-    a_windowed_padded = focal_stats.rolling_window(a_padded, window_size=5)
+    a_windowed_padded = focal_stats.rolling_window(a_padded, window=5)
     print(a.shape, a_windowed_padded.shape)
 
 
@@ -109,7 +109,7 @@ close to the original raster, with some limited smoothing
 
 .. parsed-literal::
 
-    <matplotlib.colorbar.Colorbar at 0x7f099d98b0d0>
+    <matplotlib.colorbar.Colorbar at 0x148c46de0>
 
 
 
@@ -121,15 +121,15 @@ This can be captured in a custom focal_mean function as follows:
 
 .. code:: python
 
-    def focal_mean(a, window_size):
-        a_windowed = focal_stats.rolling_window(a, window_size=window_size)
+    def focal_mean(a, window):
+        a_windowed = focal_stats.rolling_window(a, window=window)
         return a_windowed.mean(axis=(2, 3))
 
 Resulting in the same image:
 
 .. code:: python
 
-    plt.imshow(focal_mean(a, window_size=5), cmap="Blues", vmax=100)
+    plt.imshow(focal_mean(a, window=5), cmap="Blues", vmax=100)
     plt.colorbar()
 
 
@@ -137,7 +137,7 @@ Resulting in the same image:
 
 .. parsed-literal::
 
-    <matplotlib.colorbar.Colorbar at 0x7f099d8d4340>
+    <matplotlib.colorbar.Colorbar at 0x148cfbdd0>
 
 
 
@@ -148,5 +148,8 @@ Resulting in the same image:
 Note that if a single NaN-value was present in the window, it results in
 a NaN-value. I dealt with this by inserting 0 in the pixels with
 NaN-values and using the sum of this array divided by the number of
-valid values per window
-(e.g. ``rolling_sum(~np.isnan(a), window_size=5)``).
+valid values per window (e.g. ``rolling_sum(~np.isnan(a), window=5)``).
+
+
+
+

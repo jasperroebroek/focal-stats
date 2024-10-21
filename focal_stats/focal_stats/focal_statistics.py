@@ -5,7 +5,7 @@ import numpy as np
 from numpydantic import NDArray
 from pydantic import validate_call
 
-from focal_stats import rolling_sum, rolling_window
+from focal_stats.rolling import rolling_sum, rolling_window
 from focal_stats.focal_stats._focal_statistics_core import (
     _focal_majority,
     _focal_max,
@@ -354,9 +354,7 @@ def focal_std(
             print("- Empty array")
         return _create_output_array(a, window_shape, reduce)
 
-    return np.asarray(
-        _focal_std(a, window_shape, mask, fraction_accepted, reduce, std_df)
-    )
+    return np.asarray(_focal_std(a, window_shape, mask, fraction_accepted, reduce, std_df))
 
 
 @validate_call(config={"arbitrary_types_allowed": True})

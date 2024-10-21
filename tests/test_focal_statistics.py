@@ -4,44 +4,39 @@ import scipy.stats
 from numpy.ma.testutils import assert_array_almost_equal
 from pydantic import ValidationError
 
-import focal_stats
+from focal_stats.focal_stats import focal_majority, focal_max, focal_mean, focal_min, focal_std, focal_sum
+from focal_stats.rolling import rolling_window
 
 
 def test_focal_stats_values():
     a = np.random.rand(5, 5)
 
     # Values when not reducing
-    assert np.allclose(focal_stats.focal_mean(a, window=5)[2, 2], a.mean())
-    assert np.allclose(focal_stats.focal_sum(a, window=5)[2, 2], a.sum())
-    assert np.allclose(focal_stats.focal_min(a, window=5)[2, 2], a.min())
-    assert np.allclose(focal_stats.focal_max(a, window=5)[2, 2], a.max())
-    assert np.allclose(focal_stats.focal_std(a, window=5)[2, 2], a.std())
-    assert np.allclose(
-        focal_stats.focal_std(a, window=5, std_df=1)[2, 2], a.std(ddof=1)
-    )
+    assert np.allclose(focal_mean(a, window=5)[2, 2], a.mean())
+    assert np.allclose(focal_sum(a, window=5)[2, 2], a.sum())
+    assert np.allclose(focal_min(a, window=5)[2, 2], a.min())
+    assert np.allclose(focal_max(a, window=5)[2, 2], a.max())
+    assert np.allclose(focal_std(a, window=5)[2, 2], a.std())
+    assert np.allclose(focal_std(a, window=5, std_df=1)[2, 2], a.std(ddof=1))
 
     # Values when reducing
-    assert np.allclose(focal_stats.focal_mean(a, window=5, reduce=True)[0, 0], a.mean())
-    assert np.allclose(focal_stats.focal_sum(a, window=5, reduce=True)[0, 0], a.sum())
-    assert np.allclose(focal_stats.focal_min(a, window=5, reduce=True)[0, 0], a.min())
-    assert np.allclose(focal_stats.focal_max(a, window=5, reduce=True)[0, 0], a.max())
-    assert np.allclose(focal_stats.focal_std(a, window=5, reduce=True)[0, 0], a.std())
-    assert np.allclose(
-        focal_stats.focal_std(a, window=5, std_df=1, reduce=True)[0, 0], a.std(ddof=1)
-    )
+    assert np.allclose(focal_mean(a, window=5, reduce=True)[0, 0], a.mean())
+    assert np.allclose(focal_sum(a, window=5, reduce=True)[0, 0], a.sum())
+    assert np.allclose(focal_min(a, window=5, reduce=True)[0, 0], a.min())
+    assert np.allclose(focal_max(a, window=5, reduce=True)[0, 0], a.max())
+    assert np.allclose(focal_std(a, window=5, reduce=True)[0, 0], a.std())
+    assert np.allclose(focal_std(a, window=5, std_df=1, reduce=True)[0, 0], a.std(ddof=1))
 
     # compare for larger raster_shape
     a = np.random.rand(100, 100)
 
     assert np.allclose(
-        focal_stats.focal_std(a, window=5, std_df=0, reduce=True),
-        focal_stats.rolling_window(a, window=5, reduce=True, flatten=True).std(axis=-1),
+        focal_std(a, window=5, std_df=0, reduce=True),
+        rolling_window(a, window=5, reduce=True, flatten=True).std(axis=-1),
     )
     assert np.allclose(
-        focal_stats.focal_std(a, window=5, std_df=1, reduce=True),
-        focal_stats.rolling_window(a, window=5, reduce=True, flatten=True).std(
-            axis=-1, ddof=1
-        ),
+        focal_std(a, window=5, std_df=1, reduce=True),
+        rolling_window(a, window=5, reduce=True, flatten=True).std(axis=-1, ddof=1),
     )
 
     # majority modes
@@ -54,65 +49,48 @@ def test_focal_stats_values():
         mode = mode[0]
 
     # Values when reducing
-    assert (
-        focal_stats.focal_majority(a, window=5, majority_mode="ascending")[2, 2] == mode
-    )
+    assert focal_majority(a, window=5, majority_mode="ascending")[2, 2] == mode
     # Values when not reducing
-    assert (
-        focal_stats.focal_majority(a, window=5, reduce=True, majority_mode="ascending")[
-            0, 0
-        ]
-        == mode
-    )
+    assert focal_majority(a, window=5, reduce=True, majority_mode="ascending")[0, 0] == mode
 
     # Same number of observations in several classes lead to NaN in majority_mode='nan'
     a = np.arange(100).reshape(10, 10)
-    assert np.isnan(
-        focal_stats.focal_majority(a, window=10, reduce=True, majority_mode="nan")
-    )
+    assert np.isnan(focal_majority(a, window=10, reduce=True, majority_mode="nan"))
 
     # Same number of observations in several classes lead to lowest number in majority_mode='ascending'
-    assert (
-        focal_stats.focal_majority(a, window=10, reduce=True, majority_mode="ascending")
-        == 0
-    )
+    assert focal_majority(a, window=10, reduce=True, majority_mode="ascending") == 0
 
     # Same number of observations in several classes lead to highest number in majority_mode='descending'
-    assert (
-        focal_stats.focal_majority(
-            a, window=10, reduce=True, majority_mode="descending"
-        )
-        == 99
-    )
+    assert focal_majority(a, window=10, reduce=True, majority_mode="descending") == 99
 
 
 @pytest.mark.parametrize(
     "fs,np_fs",
     [
-        (focal_stats.focal_mean, np.nanmean),
-        (focal_stats.focal_sum, np.nansum),
-        (focal_stats.focal_min, np.nanmin),
-        (focal_stats.focal_max, np.nanmax),
-        (focal_stats.focal_std, np.nanstd),
+        (focal_mean, np.nanmean),
+        (focal_sum, np.nansum),
+        (focal_min, np.nanmin),
+        (focal_max, np.nanmax),
+        (focal_std, np.nanstd),
     ],
 )
 def test_focal_stats_values_mask(fs, np_fs):
     a = np.random.rand(100, 100)
     assert_array_almost_equal(
         fs(a, window=5)[2:-2, 2:-2],
-        np_fs(focal_stats.rolling_window(a, window=5, flatten=True), axis=-1),
+        np_fs(rolling_window(a, window=5, flatten=True), axis=-1),
     )
 
 
 @pytest.mark.parametrize(
     "fs",
     [
-        focal_stats.focal_mean,
-        focal_stats.focal_sum,
-        focal_stats.focal_min,
-        focal_stats.focal_max,
-        focal_stats.focal_std,
-        focal_stats.focal_majority,
+        focal_mean,
+        focal_sum,
+        focal_min,
+        focal_max,
+        focal_std,
+        focal_majority,
     ],
 )
 def test_focal_stats_shape(fs):
@@ -124,12 +102,12 @@ def test_focal_stats_shape(fs):
 @pytest.mark.parametrize(
     "fs",
     [
-        focal_stats.focal_mean,
-        focal_stats.focal_sum,
-        focal_stats.focal_min,
-        focal_stats.focal_max,
-        focal_stats.focal_std,
-        focal_stats.focal_majority,
+        focal_mean,
+        focal_sum,
+        focal_min,
+        focal_max,
+        focal_std,
+        focal_majority,
     ],
 )
 def test_focal_stats_errors(fs):
@@ -179,12 +157,12 @@ def test_focal_stats_errors(fs):
 @pytest.mark.parametrize(
     "fs",
     [
-        focal_stats.focal_mean,
-        focal_stats.focal_sum,
-        focal_stats.focal_min,
-        focal_stats.focal_max,
-        focal_stats.focal_std,
-        focal_stats.focal_majority,
+        focal_mean,
+        focal_sum,
+        focal_min,
+        focal_max,
+        focal_std,
+        focal_majority,
     ],
 )
 def test_focal_stats_nan_propagation(fs):
@@ -196,11 +174,11 @@ def test_focal_stats_nan_propagation(fs):
 @pytest.mark.parametrize(
     "fs,np_fs",
     [
-        (focal_stats.focal_mean, np.nanmean),
-        (focal_stats.focal_sum, np.nansum),
-        (focal_stats.focal_min, np.nanmin),
-        (focal_stats.focal_max, np.nanmax),
-        (focal_stats.focal_std, np.nanstd),
+        (focal_mean, np.nanmean),
+        (focal_sum, np.nansum),
+        (focal_min, np.nanmin),
+        (focal_max, np.nanmax),
+        (focal_std, np.nanstd),
     ],
 )
 def test_focal_stats_nan_behaviour_fraction_accepted(fs, np_fs):
@@ -215,22 +193,20 @@ def test_focal_stats_nan_behaviour_fraction_accepted(fs, np_fs):
 def test_focal_stats_nan_behaviour_majority():
     a = np.ones((5, 5)).astype(float)
     a[1, 1] = np.nan
-    assert focal_stats.focal_majority(a, window=5)[2, 2] == 1
-    assert not np.isnan(
-        focal_stats.focal_majority(a, window=5, fraction_accepted=0)[2, 2]
-    )
-    assert np.isnan(focal_stats.focal_majority(a, window=5, fraction_accepted=1)[2, 2])
+    assert focal_majority(a, window=5)[2, 2] == 1
+    assert not np.isnan(focal_majority(a, window=5, fraction_accepted=0)[2, 2])
+    assert np.isnan(focal_majority(a, window=5, fraction_accepted=1)[2, 2])
 
 
 @pytest.mark.parametrize(
     "fs",
     [
-        focal_stats.focal_mean,
-        focal_stats.focal_sum,
-        focal_stats.focal_min,
-        focal_stats.focal_max,
-        focal_stats.focal_std,
-        focal_stats.focal_majority,
+        focal_mean,
+        focal_sum,
+        focal_min,
+        focal_max,
+        focal_std,
+        focal_majority,
     ],
 )
 def test_focal_stats_dtype(fs):

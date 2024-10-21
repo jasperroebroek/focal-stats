@@ -15,9 +15,9 @@ import datetime
 import os
 import sys  # NOQA
 import warnings
+from pathlib import Path
 from subprocess import call
-# sys.path.insert(0, os.path.abspath('.'))
-
+sys.path.insert(0, os.path.abspath('../../focal_stats'))
 
 # -- Project information -----------------------------------------------------
 
@@ -26,7 +26,7 @@ copyright = '2021, Jasper Roebroek'
 author = 'Jasper Roebroek'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.1'
+release = '0.1.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -48,6 +48,7 @@ extensions = [
 ]
 
 autosummary_generate = True
+autodoc_default_options = {'members': True}
 
 napoleon_use_param = True
 napoleon_type_aliases = {
@@ -110,7 +111,7 @@ pygments_style = "sphinx"
 
 intersphinx_mapping = {
     'numpy': ('https://numpy.org/doc/stable/', None),
-    'np': ('https://numpy.org/doc/stable/', None)
+    # 'np': ('https://numpy.org/doc/stable/', None)
 }
 
 # -- Options for HTML output ----------------------------------------------
@@ -211,20 +212,20 @@ man_pages = [("index")]
 # man_show_urls = False
 
 # list conda packages
-call("conda list", shell=True)
+# call("conda list", shell=True)
 
 # disable warnings
 warnings.filterwarnings("ignore")
 
-notebooks = ('notebooks/tutorial', 'notebooks/custom_focal_stats')
+notebooks = [Path.cwd() / 'notebooks' / f"{file}.ipynb" for file in ('focal_stats', 'custom_focal_stats')]
 
 print("\nBuilding notebooks:")
 for nb in notebooks:
 
     # only render notebooks if necessary
-    f1 = os.path.getmtime(nb + ".ipynb")
+    f1 = os.path.getmtime(nb)
     try:
-        f2 = os.path.getmtime(nb + ".rst")
+        f2 = os.path.getmtime(nb.with_suffix('.rst'))
 
         if f2 > f1:
             print(f" --- skipping: {nb}")
@@ -238,7 +239,7 @@ for nb in notebooks:
             " --to rst"
             " --template-file notebooks/tutorial_rst.tpl"
             " --ExecutePreprocessor.timeout=60"
-            " --execute " + nb
+            " --execute " + nb.as_posix()
         ),
         shell=True,
     )

@@ -6,6 +6,9 @@ todo
 .DS_Store
 dist
 *__pycache__
+docs/build
+data/
 
 *.c
 *.so
+requirements.txt

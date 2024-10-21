@@ -6,7 +6,8 @@ It is mainly based on numpy. For more details see the documentation.
 The package implements three different categories of spatial statistics:
 - focal statistics, which are calculated as a moving window over input rasters (2D)
 - grouped statistics, which calculates the statistics based on strata (xD)
-- strata statistics, which calculates the statistics for each stratum and reapplies it to the input raster (2D)
+- strata statistics, which calculates the statistics for each stratum and reapplies it to the input raster (2D). This 
+depends on the grouped statistics module.
 
 Furthermore, this package provides functionality to implement your own focal statistics functions, based on the 
 mechanisms of a rolling window (xD).

@@ -1,9 +1,9 @@
 None
 
 .. note:: This tutorial was generated from an IPython notebook that can be
-          downloaded `here <../../../source/notebooks/tutorial.ipynb>`_.
+          downloaded `here <../../../source/notebooks/focal_stats.ipynb>`_.
 
-.. _tutorial:
+.. _focal_stats:
 
 Usage example
 =============
@@ -41,12 +41,12 @@ Inspecting the data
 
 .. parsed-literal::
 
-    <matplotlib.colorbar.Colorbar at 0x7f24dca7cf10>
+    <matplotlib.colorbar.Colorbar at 0x1495d3fe0>
 
 
 
 
-.. image:: tutorial_files/tutorial_6_1.png
+.. image:: focal_stats_files/focal_stats_6_1.png
 
 
 Focal statistics
@@ -56,48 +56,47 @@ Calculation of the focal mean:
 
 .. code:: python
 
-    plt.imshow(focal_stats.focal_mean(a, window_size=15), vmax=100, cmap="Blues")
+    plt.imshow(focal_stats.focal_mean(a, window=15), vmax=100, cmap="Blues")
 
 
 
 
 .. parsed-literal::
 
-    <matplotlib.image.AxesImage at 0x7f24d30c7e50>
+    <matplotlib.image.AxesImage at 0x149687230>
 
 
 
 
-.. image:: tutorial_files/tutorial_9_1.png
+.. image:: focal_stats_files/focal_stats_9_1.png
 
 
 This looks quite similar to the input raster, but with smoothing
-applied. Let’s try a higher window_size, which should increase the
-smoothing
+applied. Let’s try a higher window, which should increase the smoothing
 
 .. code:: python
 
-    plt.imshow(focal_stats.focal_mean(a, window_size=101), vmax=100, cmap="Blues")
+    plt.imshow(focal_stats.focal_mean(a, window=101), vmax=100, cmap="Blues")
 
 
 
 
 .. parsed-literal::
 
-    <matplotlib.image.AxesImage at 0x7f24d3041280>
+    <matplotlib.image.AxesImage at 0x14976ffb0>
 
 
 
 
-.. image:: tutorial_files/tutorial_11_1.png
+.. image:: focal_stats_files/focal_stats_11_1.png
 
 
 This same functionality can be used to reduce the shape of the raster
-based on this window_size.
+based on this window.
 
 .. code:: python
 
-    x = focal_stats.focal_mean(a, window_size=108, reduce=True)
+    x = focal_stats.focal_mean(a, window=108, reduce=True)
     plt.imshow(x, vmax=100, cmap="Blues")
 
 
@@ -105,12 +104,12 @@ based on this window_size.
 
 .. parsed-literal::
 
-    <matplotlib.image.AxesImage at 0x7f24d302a5b0>
+    <matplotlib.image.AxesImage at 0x14974a330>
 
 
 
 
-.. image:: tutorial_files/tutorial_13_1.png
+.. image:: focal_stats_files/focal_stats_13_1.png
 
 
 The shape of this new raster is exactly 108 times smaller than the input

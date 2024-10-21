@@ -31,7 +31,8 @@ documentation = [
     'sphinx_rtd_theme',
     'numpydoc',
     'jupyter',
-    'matplotlib'
+    'matplotlib',
+    'rasterio'
 ]
 develop = [
     "cython",
@@ -43,7 +44,8 @@ develop = [
     "matplotlib",
     "pytest",
     "joblib",
-    "statsmodels"
+    "statsmodels",
+    "rasterio"
 ]
 test = [
     "scipy",

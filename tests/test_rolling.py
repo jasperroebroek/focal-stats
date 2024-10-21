@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from focal_stats import rolling_mean, rolling_sum, rolling_window
+from focal_stats.rolling import rolling_mean, rolling_sum, rolling_window
 
 
 def test_rolling_int_window_dimensions():

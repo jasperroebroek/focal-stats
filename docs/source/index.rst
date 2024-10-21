@@ -7,8 +7,14 @@
 Focal statistics for python
 ***************************
 
-This module aims to provide focal statistics for python, that runs without the installation of extensive GIS packages. 
-The only dependency is numpy. Additionally, the package provides sliding window functionality to implement your own
+This module aims to provide focal statistics for python, that runs without the installation of extensive GIS packages. It is mainly based on numpy. For more details see the documentation.
+
+The package implements three different categories of spatial statistics:
+
+* focal statistics (:mod:`focal_stats`), which are calculated as a moving window over input rasters (2D)
+* grouped statistics (:mod:`grouped_stats`), which calculates the statistics based on strata (xD)
+* strata statistics (:mod:`strata_stats`), which calculates the statistics for each stratum and reapplies it to the input raster (2D). This depends on the grouped statistics module.
+
 focal statistics functions (see Tutorials). This is implemented in line with
 :func:`numpy.lib.stride_tricks.sliding_window_view`, but extends its functionality.
 
@@ -32,7 +38,7 @@ Documentation
    :maxdepth: 2
    :caption: Tutorials
 
-   notebooks/tutorial
+   notebooks/focal_stats
    notebooks/custom_focal_stats
 
 .. toctree::

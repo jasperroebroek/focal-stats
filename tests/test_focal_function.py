@@ -4,7 +4,7 @@ from typing import Dict
 import numpy as np
 import pytest
 
-from focal_stats import focal_mean
+from focal_stats.focal_stats import focal_mean
 from focal_stats.focal_function import focal_function
 
 
