@@ -4,8 +4,8 @@ from typing import Dict
 import numpy as np
 import pytest
 
-from focal_stats.focal_stats import focal_mean
-from focal_stats.focal_function import focal_function
+from spatial_stats.focal_stats import focal_mean
+from spatial_stats.focal_function import focal_function
 
 
 def mean_fun_t(x: np.ndarray, key: str) -> Dict[str, float]:

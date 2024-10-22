@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from focal_stats.grouped_stats import grouped_min, grouped_min_pd
+from spatial_stats.grouped_stats import grouped_min, grouped_min_pd
 
 rs = np.random.RandomState(0)
 

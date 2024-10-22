@@ -4,7 +4,7 @@
 
 import numpy as np
 
-from focal_stats.stat_helper_functions import calculate_p_value
+from spatial_stats.stat_helper_functions import calculate_p_value
 
 cimport numpy as cnp
 from collections import namedtuple

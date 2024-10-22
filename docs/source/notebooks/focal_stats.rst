@@ -10,7 +10,7 @@ Usage example
 
 .. code:: python
 
-    import focal_stats
+    import spatial_stats.focal_stats as fs
     import rasterio as rio
     import matplotlib.pyplot as plt
     import numpy as np
@@ -41,7 +41,7 @@ Inspecting the data
 
 .. parsed-literal::
 
-    <matplotlib.colorbar.Colorbar at 0x1495d3fe0>
+    <matplotlib.colorbar.Colorbar at 0x151689c10>
 
 
 
@@ -56,14 +56,14 @@ Calculation of the focal mean:
 
 .. code:: python
 
-    plt.imshow(focal_stats.focal_mean(a, window=15), vmax=100, cmap="Blues")
+    plt.imshow(fs.focal_mean(a, window=15), vmax=100, cmap="Blues")
 
 
 
 
 .. parsed-literal::
 
-    <matplotlib.image.AxesImage at 0x149687230>
+    <matplotlib.image.AxesImage at 0x151869bb0>
 
 
 
@@ -76,14 +76,14 @@ applied. Let’s try a higher window, which should increase the smoothing
 
 .. code:: python
 
-    plt.imshow(focal_stats.focal_mean(a, window=101), vmax=100, cmap="Blues")
+    plt.imshow(fs.focal_mean(a, window=101), vmax=100, cmap="Blues")
 
 
 
 
 .. parsed-literal::
 
-    <matplotlib.image.AxesImage at 0x14976ffb0>
+    <matplotlib.image.AxesImage at 0x1518ab470>
 
 
 
@@ -96,7 +96,7 @@ based on this window.
 
 .. code:: python
 
-    x = focal_stats.focal_mean(a, window=108, reduce=True)
+    x = fs.focal_mean(a, window=108, reduce=True)
     plt.imshow(x, vmax=100, cmap="Blues")
 
 
@@ -104,7 +104,7 @@ based on this window.
 
 .. parsed-literal::
 
-    <matplotlib.image.AxesImage at 0x14974a330>
+    <matplotlib.image.AxesImage at 0x15180ae40>
 
 
 

@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/focal-stats
+      url: https://pypi.org/p/spatial-stats
     permissions:
       id-token: write
 

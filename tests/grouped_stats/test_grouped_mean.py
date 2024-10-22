@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from focal_stats.grouped_stats import (
+from spatial_stats.grouped_stats import (
     grouped_mean,
     grouped_mean_pd, grouped_mean_std_pd,
 )

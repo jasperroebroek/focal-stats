@@ -6,11 +6,12 @@ Algorithm to correlate two arrays (2D) with each other
 """
 import numpy as np
 
-from .iteration_params cimport _define_iter_params
+from ._iteration_params cimport _define_iter_params, IterParams
 
 cimport numpy as np
 from libc.stdlib cimport free
 from libc.math cimport isnan, sqrt
+
 
 cpdef double[:, ::1] _correlate_rasters(double[:, ::1] a,
                                         double[:, ::1] b,
@@ -27,6 +28,7 @@ cpdef double[:, ::1] _correlate_rasters(double[:, ::1] a,
         bint all_equal_d1, all_equal_d2
         size_t shape[2]
         size_t ws[2]
+        IterParams *ip
 
     shape[0] = a.shape[0]
     shape[1] = a.shape[1]

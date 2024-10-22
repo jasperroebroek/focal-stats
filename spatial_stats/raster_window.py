@@ -3,7 +3,7 @@ from typing import Callable, Generator, List, Tuple
 import numpy as np
 from pydantic import BaseModel, validate_call
 
-from focal_stats.types import PositiveInt, Shape2D, UInt
+from spatial_stats.types import PositiveInt, Shape2D, UInt
 
 # WindowFunction arguments correspond to keys in the `input` dictionary, and should return another dict with the keys
 # corresponding to the `output` dictionary of the `focal_function` function.

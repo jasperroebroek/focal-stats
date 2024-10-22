@@ -7,10 +7,10 @@ from numpy._typing import DTypeLike
 from numpydantic import NDArray
 from pydantic import BaseModel, ConfigDict, validate_call
 
-from focal_stats.raster_window import RasterWindowPair, construct_windows
-from focal_stats.types import Mask, PositiveInt, Shape2D
-from focal_stats.utils import timeit
-from focal_stats.window import Window, define_window, validate_window
+from spatial_stats.raster_window import RasterWindowPair, construct_windows
+from spatial_stats.types import Mask, PositiveInt, Shape2D
+from spatial_stats.utils import timeit
+from spatial_stats.window import Window, define_window, validate_window
 
 
 class MemmapContext(BaseModel):

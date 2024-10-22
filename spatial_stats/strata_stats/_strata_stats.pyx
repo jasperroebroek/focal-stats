@@ -2,19 +2,19 @@
 # cython: boundscheck=False
 # cython: wraparound=False
 
-from focal_stats.stat_helper_functions import calculate_p_value
-from focal_stats.types import RasterFloat32, RasterT
+from spatial_stats.stat_helper_functions import calculate_p_value
+from spatial_stats.types import RasterFloat32, RasterT
 
 from collections import namedtuple
 import numpy as np
 
-from focal_stats.grouped_stats._grouped_count cimport _define_max_ind, _grouped_count
-from focal_stats.grouped_stats._grouped_mean cimport _grouped_mean
-from focal_stats.grouped_stats._grouped_min cimport _grouped_min
-from focal_stats.grouped_stats._grouped_max cimport _grouped_max
-from focal_stats.grouped_stats._grouped_std cimport _grouped_std
-from focal_stats.grouped_stats._grouped_correlation cimport _grouped_correlation, CyGroupedCorrelationResult
-from focal_stats.grouped_stats._grouped_linear_regression cimport (
+from spatial_stats.grouped_stats._grouped_count cimport _define_max_ind, _grouped_count
+from spatial_stats.grouped_stats._grouped_mean cimport _grouped_mean
+from spatial_stats.grouped_stats._grouped_min cimport _grouped_min
+from spatial_stats.grouped_stats._grouped_max cimport _grouped_max
+from spatial_stats.grouped_stats._grouped_std cimport _grouped_std
+from spatial_stats.grouped_stats._grouped_correlation cimport _grouped_correlation, CyGroupedCorrelationResult
+from spatial_stats.grouped_stats._grouped_linear_regression cimport (
     _grouped_linear_regression,
     CyGroupedLinearRegressionResult,
 )

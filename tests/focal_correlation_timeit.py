@@ -1,4 +1,4 @@
-from focal_stats import focal_correlation
+from spatial_stats import focal_correlation
 import numpy as np
 
 x = np.random.rand(10_000, 10_000)

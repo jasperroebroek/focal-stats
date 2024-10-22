@@ -3,34 +3,34 @@ from numpydantic import Shape
 from numpydantic.dtype import Float32, Int64
 from numpydantic.ndarray import NDArray
 
-from focal_stats.grouped_stats._grouped_correlation import (
+from spatial_stats.grouped_stats._grouped_correlation import (
     GroupedCorrelationResult,
     grouped_correlation_npy,
     grouped_correlation_npy_filtered,
 )
-from focal_stats.grouped_stats._grouped_linear_regression import (
+from spatial_stats.grouped_stats._grouped_linear_regression import (
     GroupedLinearRegressionResult,
     grouped_linear_regression_npy,
     grouped_linear_regression_npy_filtered,
 )
-from focal_stats.grouped_stats._grouped_std import (
+from spatial_stats.grouped_stats._grouped_std import (
     grouped_std_npy,
     grouped_std_npy_filtered,
 )
-from focal_stats.grouped_stats.utils import generate_index, grouped_fun, grouped_fun_pd, parse_array
-from focal_stats.grouped_stats._grouped_count import (
+from spatial_stats.grouped_stats._utils import generate_index, grouped_fun, grouped_fun_pd, parse_array
+from spatial_stats.grouped_stats._grouped_count import (
     grouped_count_npy,
     grouped_count_npy_filtered,
 )
-from focal_stats.grouped_stats._grouped_max import (
+from spatial_stats.grouped_stats._grouped_max import (
     grouped_max_npy,
     grouped_max_npy_filtered,
 )
-from focal_stats.grouped_stats._grouped_mean import (
+from spatial_stats.grouped_stats._grouped_mean import (
     grouped_mean_npy,
     grouped_mean_npy_filtered,
 )
-from focal_stats.grouped_stats._grouped_min import (
+from spatial_stats.grouped_stats._grouped_min import (
     grouped_min_npy,
     grouped_min_npy_filtered,
 )

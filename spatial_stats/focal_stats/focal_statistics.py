@@ -5,16 +5,16 @@ import numpy as np
 from numpydantic import NDArray
 from pydantic import validate_call
 
-from focal_stats.rolling import rolling_sum, rolling_window
-from focal_stats.focal_stats._focal_statistics_core import (
+from spatial_stats.rolling import rolling_sum, rolling_window
+from spatial_stats.focal_stats._focal_statistics_core import (
     _focal_majority,
     _focal_max,
     _focal_min,
     _focal_std,
     _focal_sum,
 )
-from focal_stats.types import Fraction, Mask, PositiveInt, RasterFloat64
-from focal_stats.utils import (
+from spatial_stats.types import Fraction, Mask, PositiveInt, RasterFloat64
+from spatial_stats.utils import (
     _calc_below_fraction_accepted_mask,
     _calc_count_values,
     _create_output_array,
@@ -22,7 +22,7 @@ from focal_stats.utils import (
     _parse_nans,
     timeit,
 )
-from focal_stats.window import Window, define_ind_inner, define_window, validate_window
+from spatial_stats.window import Window, define_ind_inner, define_window, validate_window
 
 
 class MajorityMode(IntEnum):

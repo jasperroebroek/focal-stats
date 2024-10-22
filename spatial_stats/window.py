@@ -5,7 +5,7 @@ import numpy as np
 from numpydantic import NDArray
 from pydantic import BaseModel, validate_call
 
-from focal_stats.types import Mask, PositiveInt, Shape
+from spatial_stats.types import Mask, PositiveInt, Shape
 
 
 class Window(ABC):

@@ -2,9 +2,9 @@ import numpy as np
 import pytest
 from scipy.stats import pearsonr
 
-from focal_stats.focal_stats import focal_correlation
-from focal_stats.focal_stats import focal_correlation_base
-from focal_stats.window import define_window
+from spatial_stats.focal_stats import focal_correlation
+from spatial_stats.focal_stats import focal_correlation_base
+from spatial_stats.window import define_window
 
 
 def overlapping_arrays(m, preserve_input=True):

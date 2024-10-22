@@ -1,4 +1,4 @@
-from focal_stats.strata_stats.strata_stats import (
+from spatial_stats.strata_stats.strata_stats import (
     strata_correlation,
     strata_count,
     strata_linear_regression,

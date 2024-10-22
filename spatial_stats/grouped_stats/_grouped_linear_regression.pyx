@@ -5,7 +5,7 @@
 from collections import namedtuple
 import numpy as np
 
-from focal_stats.stat_helper_functions import calculate_p_value
+from spatial_stats.stat_helper_functions import calculate_p_value
 
 from libc.math cimport sqrt, isnan, NAN, pow
 from libc.stdlib cimport malloc, calloc, free

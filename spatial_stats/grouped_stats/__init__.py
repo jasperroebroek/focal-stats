@@ -2,8 +2,8 @@
 ind     Contains group index, with 0 being no group allocation ind=0 is skipped
 v*      Variable(s). If one, 'v', otherwise v1, v2 etc.
 """
-from focal_stats.grouped_stats.utils import define_max_ind, generate_index
-from focal_stats.grouped_stats.grouped_stats import (
+from spatial_stats.grouped_stats._utils import define_max_ind, generate_index
+from spatial_stats.grouped_stats.grouped_stats import (
     grouped_correlation,
     grouped_correlation_pd,
     grouped_count,

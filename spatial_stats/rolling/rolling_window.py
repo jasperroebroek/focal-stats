@@ -5,8 +5,8 @@ from numpy.lib.stride_tricks import as_strided
 from numpydantic.ndarray import NDArray
 from pydantic import validate_call
 
-from focal_stats.types import Mask, PositiveInt
-from focal_stats.window import Window, define_window, validate_window
+from spatial_stats.types import Mask, PositiveInt
+from spatial_stats.window import Window, define_window, validate_window
 
 
 @validate_call(config={"arbitrary_types_allowed": True})

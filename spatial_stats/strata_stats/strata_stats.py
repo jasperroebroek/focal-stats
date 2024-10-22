@@ -3,8 +3,8 @@ from typing import Callable
 import numpy as np
 from numpydantic import NDArray
 
-from focal_stats.grouped_stats.utils import parse_data
-from focal_stats.strata_stats._strata_stats import (
+from spatial_stats.grouped_stats._utils import parse_data
+from spatial_stats.strata_stats._strata_stats import (
     StrataCorrelationResult,
     StrataLinearRegressionResult,
     _strata_correlation,
@@ -16,7 +16,7 @@ from focal_stats.strata_stats._strata_stats import (
     _strata_min,
     _strata_std,
 )
-from focal_stats.types import RasterFloat32
+from spatial_stats.types import RasterFloat32
 
 
 def strata_fun(fun: Callable, ind: NDArray, **data) -> RasterFloat32:

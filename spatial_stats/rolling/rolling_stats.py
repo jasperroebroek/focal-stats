@@ -4,9 +4,9 @@ import numpy as np
 from numpydantic import NDArray
 from pydantic import validate_call
 
-from focal_stats.rolling.rolling_window import rolling_window
-from focal_stats.types import Mask, PositiveInt
-from focal_stats.window import Window, define_window, validate_window
+from spatial_stats.rolling.rolling_window import rolling_window
+from spatial_stats.types import Mask, PositiveInt
+from spatial_stats.window import Window, define_window, validate_window
 
 
 @validate_call(config={"arbitrary_types_allowed": True})

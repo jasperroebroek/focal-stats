@@ -1,7 +1,7 @@
-focal_stats
-===========
+spatial_stats
+=============
 
 .. toctree::
    :maxdepth: 4
 
-   focal_stats
+   spatial_stats

@@ -8,8 +8,8 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "focal_stats"
-version = "0.1.0"
+name = "spatial_stats"
+version = "0.0.1"
 description = ""
 authors = [
     { name = "Jasper Roebroek", email = "roebroek.jasper@gmail.com" }

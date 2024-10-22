@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from focal_stats.grouped_stats import define_max_ind, grouped_count, grouped_count_pd
+from spatial_stats.grouped_stats import define_max_ind, grouped_count, grouped_count_pd
 
 rs = np.random.RandomState(0)
 

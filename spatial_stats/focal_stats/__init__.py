@@ -1,8 +1,8 @@
-from focal_stats.focal_stats.focal_correlation import (
+from spatial_stats.focal_stats.focal_correlation import (
     focal_correlation,
     focal_correlation_base,
 )
-from focal_stats.focal_stats.focal_statistics import (
+from spatial_stats.focal_stats.focal_statistics import (
     focal_majority,
     focal_max,
     focal_mean,

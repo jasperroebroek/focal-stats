@@ -17,13 +17,13 @@ import sys  # NOQA
 import warnings
 from pathlib import Path
 from subprocess import call
-# sys.path.insert(0, os.path.abspath('../../focal_stats'))
+sys.path.insert(0, os.path.abspath('../../spatial_stats'))
 # sys.path.insert(0, os.path.abspath('../..'))
 # sys.path.insert(0, os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'focal_stats'
+project = 'spatial_stats'
 copyright = '2021, Jasper Roebroek'
 author = 'Jasper Roebroek'
 

@@ -3,7 +3,7 @@ import pytest
 from scipy.stats import pearsonr
 import pandas as pd
 
-from focal_stats.grouped_stats import (
+from spatial_stats.grouped_stats import (
     grouped_correlation,
     grouped_correlation_pd,
 )

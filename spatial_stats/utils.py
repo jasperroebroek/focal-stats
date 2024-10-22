@@ -6,8 +6,8 @@ import numpy as np
 from numpy.typing import DTypeLike
 from numpydantic.ndarray import NDArray
 
-from focal_stats.types import Fraction, RasterBool, RasterFloat64, RasterWindowShape
-from focal_stats.window import Window
+from spatial_stats.types import Fraction, RasterBool, RasterFloat64, RasterWindowShape
+from spatial_stats.window import Window
 
 
 def timeit(func):
@@ -59,8 +59,8 @@ def _create_output_array(
 def _calc_count_values(
     window: Window, nan_mask: RasterBool, reduce: bool, ind_inner: Tuple[slice, slice]
 ) -> RasterFloat64:
-    from focal_stats.focal_stats.focal_statistics import focal_sum
-    from focal_stats.rolling.rolling_stats import rolling_sum
+    from spatial_stats.focal_stats.focal_statistics import focal_sum
+    from spatial_stats.rolling.rolling_stats import rolling_sum
 
     if window.masked:
         count_values = np.asarray(

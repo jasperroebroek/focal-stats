@@ -1,4 +1,4 @@
-name: focal_stats
+name: spatial_stats
 channels:
   - defaults
   - conda-forge
