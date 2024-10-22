@@ -23,37 +23,6 @@ pyspatialstats.focal\_function module
    :undoc-members:
    :show-inheritance:
 
-pyspatialstats.raster\_window module
-------------------------------------
-
-.. automodule:: pyspatialstats.raster_window
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pyspatialstats.stat\_helper\_functions module
----------------------------------------------
-
-.. automodule:: pyspatialstats.stat_helper_functions
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pyspatialstats.types module
----------------------------
-
-.. automodule:: pyspatialstats.types
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-pyspatialstats.utils module
----------------------------
-
-.. automodule:: pyspatialstats.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 pyspatialstats.window module
 ----------------------------
@@ -63,10 +32,3 @@ pyspatialstats.window module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: pyspatialstats
-   :members:
-   :undoc-members:
-   :show-inheritance:

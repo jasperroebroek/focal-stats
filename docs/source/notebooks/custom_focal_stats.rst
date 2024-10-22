@@ -42,7 +42,7 @@ Inspecting the data
 
 .. parsed-literal::
 
-    <matplotlib.colorbar.Colorbar at 0x159932570>
+    <matplotlib.colorbar.Colorbar at 0x1526da600>
 
 
 
@@ -110,7 +110,7 @@ close to the original raster, with some limited smoothing
 
 .. parsed-literal::
 
-    <matplotlib.colorbar.Colorbar at 0x159a56030>
+    <matplotlib.colorbar.Colorbar at 0x152767110>
 
 
 
@@ -118,15 +118,16 @@ close to the original raster, with some limited smoothing
 .. image:: custom_focal_stats_files/custom_focal_stats_17_1.png
 
 
-This can be captured in a custom focal_mean function as follows:
+This can be captured in a custom focal mean function as follows:
 
 .. code:: python
 
-    def focal_mean(a, window):
+    def custom_focal_mean(a, window):
         a_windowed = rolling.rolling_window(a, window=window)
         return a_windowed.mean(axis=(2, 3))
 
-Resulting in the same image:
+This comes close to the ``focal_mean`` function implemented in this
+codebase
 
 .. code:: python
 
@@ -138,7 +139,7 @@ Resulting in the same image:
 
 .. parsed-literal::
 
-    <matplotlib.colorbar.Colorbar at 0x159af7350>
+    <matplotlib.colorbar.Colorbar at 0x1528af770>
 
 
 
@@ -146,7 +147,9 @@ Resulting in the same image:
 .. image:: custom_focal_stats_files/custom_focal_stats_21_1.png
 
 
-Note that if a single NaN-value was present in the window, it results in
-a NaN-value. I dealt with this by inserting 0 in the pixels with
-NaN-values and using the sum of this array divided by the number of
-valid values per window (e.g. ``rolling_sum(~np.isnan(a), window=5)``).
+Note that for ``custom_focal_mean``, if a single NaN-value is present in
+the window, it results in a NaN-value. The ``focal_mean`` function in
+this package deals with this in a better way through the
+``fraction_accepted`` parameter.
+
+

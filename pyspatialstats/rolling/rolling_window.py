@@ -27,30 +27,31 @@ def rolling_window(
         Input array
     window : int, array_like, Window
         Window that is applied over ``a``. It can be an integer or a sequence of integers, which will be interpreted as
-        a rectangular window, a mask or a window object. If a mask is provided, its raster_shape will be used to flatten ``a``,
-        resulting in dimensionality ``a.ndim + 1`` as the final result, just as in the case of `flatten` is True.
+        a rectangular window, a mask or a :class:`pyspatialstats.window.Window` object. If a mask is provided, its
+        raster_shape will be used to flatten ``a``, resulting in dimensionality ``a.ndim + 1`` as the final result,
+        just as in the case of ``flatten`` is True.
     flatten : bool, optional
         Flag to flatten the windowed view to 1 dimension. The raster_shape of the returned array if set to True will be:
 
-            *reduce* == False:
-                raster_shape : (s - window_shape + 1) + (np.prod(window_shape),)
-            *reduce* == True:
-                raster_shape : (s // window_shape) + (np.prod(window_shape),)
+            * ``reduce == False``:
+                shape : ``(s - window_shape + 1) + (np.prod(window_shape),)``
+            * ``reduce == True``:
+                shape : ``(s // window_shape) + (np.prod(window_shape),)``
 
-        If set to False (which is the default) the raster_shape of the window will not change and the data will be added in as
-        many dimensions as the input array. The raster_shape will be:
+        If set to False (which is the default) the raster_shape of the window will not change and the data will be added
+        in as many dimensions as the input array. The raster_shape will be:
 
-            *reduce* == False:
-                raster_shape : (s - window_shape + 1) + (window_shape)
-            *reduce* == True:
-                raster_shape : (s // window_shape) + (window_shape)
+            * ``reduce == False``:
+                shape : ``(s - window_shape + 1) + (window_shape)``
+            * ``reduce == True``:
+                shape : ``(s // window_shape) + (window_shape)``
 
         False has the nice property of returning a view, not copying the data while if True is passed, all the data will
         be copied. This can be very slow and memory intensive for large arrays.
     reduce : bool, optional
         Reuse data if set to False (which is the default) in which case an array will be returned with dimensions that
-        are close to the original; see ``flatten``. If set to true, every entry is used exactly once. Creating much
-        smaller dimensions.
+        are close to the original; see ``flatten``. If set to True, every entry is used exactly once, meaning that the
+        sliding windows do not overlap each other. This creating much smaller output array.
     kwargs : dict, optional
         Arguments for :func:`~numpy.lib.stride_tricks.as_strided`, notably ``subok`` and ``writeable`` (see numpy
         documentation).

@@ -25,18 +25,18 @@ def rolling_sum(
         Input array
     window : int, array_like, Window
         Window that is applied over ``a``. It can be an integer or a sequence of integers, which will be interpreted as
-        a rectangular window, a mask or a window object. If a mask is provided, its raster_shape will be used to flatten ``a``,
-        resulting in dimensionality ``a.ndim + 1`` as the final result, just as in the case of `flatten` is True.
+        a rectangular window, a mask or a :class:`pyspatialstats.window.Window` object.
     reduce : bool, optional
         Reuse data if set to False (which is the default) in which case an array will be returned with dimensions that
-        are close to the original; see ``flatten``. If set to true, every entry is used exactly once. Creating much
-        smaller dimensions.
+        are close to the original; see ``flatten`` in :func:`pyspatialstats.rolling.rolling_window`. If set to true,
+        every entry is used exactly once, meaning that the sliding windows do not overlap. This Creates much smaller
+        output dimensions.
 
     Returns
     -------
     :obj:`~numpy.ndarray`
-        Rolling sum over array ``a``. Resulting raster_shape depends on reduce parameter. See :func:`rolling_window` for
-        documentation. If a mask is provided, the last dimension has the length of the sum of ``mask``.
+        Rolling sum over array ``a``. Resulting shape depends on reduce parameter. See :func:`rolling_window` for
+        documentation.
     """
     a = np.asarray(a)
     shape = np.asarray(a.shape)
@@ -96,18 +96,18 @@ def rolling_mean(
         Input array
     window : int, array_like, Window
         Window that is applied over ``a``. It can be an integer or a sequence of integers, which will be interpreted as
-        a rectangular window, a mask or a window object. If a mask is provided, its raster_shape will be used to flatten ``a``,
-        resulting in dimensionality ``a.ndim + 1`` as the final result, just as in the case of `flatten` is True.
+        a rectangular window, a mask or a :class:`pyspatialstats.window.Window` object.
     reduce : bool, optional
         Reuse data if set to False (which is the default) in which case an array will be returned with dimensions that
-        are close to the original; see ``flatten``. If set to true, every entry is used exactly once. Creating much
-        smaller dimensions.
+        are close to the original; see ``flatten`` in :func:`pyspatialstats.rolling.rolling_window`. If set to true,
+        every entry is used exactly once, meaning that the sliding windows do not overlap. This Creates much smaller
+        output dimensions.
 
     Returns
     -------
     :obj:`~numpy.ndarray`
-        Rolling mean over array ``a``. Resulting raster_shape depends on reduce parameter. See :func:`rolling_window` for
-        documentation. If a mask is provided, the last dimension has the length of the sum of ``mask``.
+        Rolling mean over array ``a``. Resulting shape depends on reduce parameter. See :func:`rolling_window` for
+        documentation.
     """
     a = np.asarray(a)
     shape = np.asarray(a.shape)

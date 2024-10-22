@@ -20,7 +20,7 @@ def focal_correlation(
     *,
     window: PositiveInt | Sequence[PositiveInt] | Mask | Window = 5,
     fraction_accepted: Fraction = 0.7,
-    verbose: bool = False,
+    verbose: bool = False, # noqa
     reduce: bool = False,
 ) -> RasterFloat64:
     """
@@ -30,24 +30,29 @@ def focal_correlation(
     ----------
     a, b : array-like
         Input arrays that will be correlated. If not present in dtype :obj:`~numpy.float64` it will be converted
-        internally. They have exatly the same raster_shape and have two dimensions.
+        internally. They need to have the same shape and have two dimensions.
     window : int, array_like, Window
         Window that is applied over ``a``. It can be an integer or a sequence of integers, which will be interpreted as
-        a rectangular window, a mask or a Window object.
+        a rectangular window, a mask or a custom ``Window`` object.
     fraction_accepted : float, optional
-        Fraction of the window that has to contain not-nans for the function to calculate the correlation. The default
-        is 0.7.
+        Fraction of valid cells (not NaN) per window that is deemed acceptable
+        
+        * ``0``: all windows are calculated if at least 1 value is present
+        * ``1``: only windows completely filled with values are calculated
+        * ``0-1``: fraction of acceptability
+
     reduce : bool, optional
         Reuse all cells exactly once by setting a stepsize of the same size as window_shape. The resulting raster will
         have the raster_shape: ``raster_shape/window_shape``
     verbose : bool, optional
-        Times the correlation calculations
+        Verbosity with timing. False by default
 
     Returns
     -------
     :obj:`~numpy.ndarray`
-        numpy array of the local correlation. If ``reduce`` is set to False, the output has the same raster_shape as the input
-        raster, while if ``reduce`` is True, the output is reduced by the window size: ``raster_shape // window_shape``.
+        numpy array of the local correlation. If ``reduce`` is set to False, the output has the same raster_shape as the
+        input raster, while if ``reduce`` is True, the output is reduced by the window size:
+        ``raster_shape // window_shape``.
     """
     a = _parse_array(a)
     b = _parse_array(b)
@@ -92,23 +97,27 @@ def focal_correlation_base(
     ----------
     a, b : array-like
         Input arrays that will be correlated. If not present in dtype :obj:`~numpy.float64` it will be converted
-        internally. They have exactly the same raster_shape and have two dimensions.
+        internally. They need to have the same shape and have two dimensions.
     window : int
         Window that is applied over ``a``.
     fraction_accepted : float, optional
-        Fraction of the window that has to contain not-nans for the function to calculate the correlation. The default
-        is 0.7.
+        Fraction of valid cells (not NaN) per window that is deemed acceptable
+
+        * ``0``: all windows are calculated if at least 1 value is present
+        * ``1``: only windows completely filled with values are calculated
+        * ``0-1``: fraction of acceptability
     reduce : bool, optional
         Reuse all cells exactly once by setting a stepsize of the same size as window_shape. The resulting raster will
         have the raster_shape: ``raster_shape/window_shape``
     verbose : bool, optional
-        Times the correlation calculations
+        Verbosity with timing. False by default
 
     Returns
     -------
     :obj:`~numpy.ndarray`
-        numpy array of the local correlation. If ``reduce`` is set to False, the output has the same raster_shape as the input
-        raster, while if ``reduce`` is True, the output is reduced by the window size: ``raster_shape // window_shape``.
+        numpy array of the local correlation. If ``reduce`` is set to False, the output has the same raster_shape as the
+        input raster, while if ``reduce`` is True, the output is reduced by the window size:
+        ``raster_shape // window_shape``.
     """
     if verbose:
         print("testing validity of request")

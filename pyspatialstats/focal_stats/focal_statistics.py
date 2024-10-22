@@ -53,9 +53,11 @@ def focal_min(
         a rectangular window, a mask or a Window object.
     fraction_accepted : float, optional
         Fraction of valid cells (not NaN) per window that is deemed acceptable
-        ``0``: all window are calculated if at least 1 value is present
-        ``1``: only windows completely filled with values are calculated
-        ``0-1``: fraction of acceptability
+        
+        * ``0``: all windows are calculated if at least 1 value is present
+        * ``1``: only windows completely filled with values are calculated
+        * ``0-1``: fraction of acceptability
+        
     verbose : bool, optional
         Verbosity with timing. False by default
     reduce : bool, optional
@@ -136,9 +138,11 @@ def focal_max(
         a rectangular window, a mask or a Window object.
     fraction_accepted : float, optional
         Fraction of valid cells (not NaN) per window that is deemed acceptable
-        ``0``: all window are calculated if at least 1 value is present
-        ``1``: only windows completely filled with values are calculated
-        ``0-1``: fraction of acceptability
+        
+        * ``0``: all windows are calculated if at least 1 value is present
+        * ``1``: only windows completely filled with values are calculated
+        * ``0-1``: fraction of acceptability
+        
     verbose : bool, optional
         Verbosity with timing. False by default
     reduce : bool, optional
@@ -222,9 +226,11 @@ def focal_mean(
         every window.
     fraction_accepted : float, optional
         Fraction of valid cells (not NaN) per window that is deemed acceptable
-        ``0``: all window are calculated if at least 1 value is present
-        ``1``: only windows completely filled with values are calculated
-        ``0-1``: fraction of acceptability
+        
+        * ``0``: all windows are calculated if at least 1 value is present
+        * ``1``: only windows completely filled with values are calculated
+        * ``0-1``: fraction of acceptability
+        
     verbose : bool, optional
         Verbosity with timing. False by default
     reduce : bool, optional
@@ -302,9 +308,11 @@ def focal_std(
         a rectangular window, a mask or a Window object.
     fraction_accepted : float, optional
         Fraction of valid cells (not NaN) per window that is deemed acceptable
-        ``0``: all window are calculated if at least 1 value is present
-        ``1``: only windows completely filled with values are calculated
-        ``0-1``: fraction of acceptability
+        
+        * ``0``: all windows are calculated if at least 1 value is present
+        * ``1``: only windows completely filled with values are calculated
+        * ``0-1``: fraction of acceptability
+        
     verbose : bool, optional
         Verbosity with timing. False by default
     reduce : bool, optional
@@ -379,9 +387,11 @@ def focal_sum(
         a rectangular window, a mask or a Window object.
     fraction_accepted : float, optional
         Fraction of valid cells (not NaN) per window that is deemed acceptable
-        ``0``: all window are calculated if at least 1 value is present
-        ``1``: only windows completely filled with values are calculated
-        ``0-1``: fraction of acceptability
+        
+        * ``0``: all windows are calculated if at least 1 value is present
+        * ``1``: only windows completely filled with values are calculated
+        * ``0-1``: fraction of acceptability
+        
     verbose : bool, optional
         Verbosity with timing. False by default
     reduce : bool, optional
@@ -468,9 +478,11 @@ def focal_majority(
         a rectangular window, a mask or a Window object.
     fraction_accepted : float, optional
         Fraction of valid cells (not NaN) per window that is deemed acceptable
-        ``0``: all window are calculated if at least 1 value is present
-        ``1``: only windows completely filled with values are calculated
-        ``0-1``: fraction of acceptability
+        
+        * ``0``: all windows are calculated if at least 1 value is present
+        * ``1``: only windows completely filled with values are calculated
+        * ``0-1``: fraction of acceptability
+        
     verbose : bool, optional
         Verbosity with timing. False by default
     reduce : bool, optional
