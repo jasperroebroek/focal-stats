@@ -1,13 +1,13 @@
-spatial\_stats.grouped\_stats package
+pyspatialstats.grouped\_stats package
 =====================================
 
 Submodules
 ----------
 
-spatial\_stats.grouped\_stats.grouped\_stats module
+pyspatialstats.grouped\_stats.grouped\_stats module
 ---------------------------------------------------
 
-.. automodule:: spatial_stats.grouped_stats.grouped_stats
+.. automodule:: pyspatialstats.grouped_stats.grouped_stats
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ spatial\_stats.grouped\_stats.grouped\_stats module
 Module contents
 ---------------
 
-.. automodule:: spatial_stats.grouped_stats
+.. automodule:: pyspatialstats.grouped_stats
    :members:
    :undoc-members:
    :show-inheritance:

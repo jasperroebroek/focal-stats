@@ -17,4 +17,4 @@ Install with
 
 .. code-block:: bash
 
-    conda install --channel conda-forge focal-stats
+    conda install --channel conda-forge pyspatialstats

@@ -1,7 +1,7 @@
-spatial_stats
-=============
+pyspatialstats
+==============
 
 .. toctree::
    :maxdepth: 4
 
-   spatial_stats
+   pyspatialstats

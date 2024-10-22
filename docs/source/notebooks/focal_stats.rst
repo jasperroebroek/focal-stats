@@ -10,7 +10,7 @@ Usage example
 
 .. code:: python
 
-    import spatial_stats.focal_stats as fs
+    import pyspatialstats.focal_stats as fs
     import rasterio as rio
     import matplotlib.pyplot as plt
     import numpy as np
@@ -41,7 +41,7 @@ Inspecting the data
 
 .. parsed-literal::
 
-    <matplotlib.colorbar.Colorbar at 0x151689c10>
+    <matplotlib.colorbar.Colorbar at 0x159391970>
 
 
 
@@ -63,7 +63,7 @@ Calculation of the focal mean:
 
 .. parsed-literal::
 
-    <matplotlib.image.AxesImage at 0x151869bb0>
+    <matplotlib.image.AxesImage at 0x15946e960>
 
 
 
@@ -83,7 +83,7 @@ applied. Let’s try a higher window, which should increase the smoothing
 
 .. parsed-literal::
 
-    <matplotlib.image.AxesImage at 0x1518ab470>
+    <matplotlib.image.AxesImage at 0x159404c50>
 
 
 
@@ -104,7 +104,7 @@ based on this window.
 
 .. parsed-literal::
 
-    <matplotlib.image.AxesImage at 0x15180ae40>
+    <matplotlib.image.AxesImage at 0x15958bf50>
 
 
 

@@ -1,4 +1,4 @@
-spatial\_stats package
+pyspatialstats package
 ======================
 
 Subpackages
@@ -7,58 +7,58 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   spatial_stats.focal_stats
-   spatial_stats.grouped_stats
-   spatial_stats.rolling
-   spatial_stats.strata_stats
+   pyspatialstats.focal_stats
+   pyspatialstats.grouped_stats
+   pyspatialstats.rolling
+   pyspatialstats.strata_stats
 
 Submodules
 ----------
 
-spatial\_stats.focal\_function module
+pyspatialstats.focal\_function module
 -------------------------------------
 
-.. automodule:: spatial_stats.focal_function
+.. automodule:: pyspatialstats.focal_function
    :members:
    :undoc-members:
    :show-inheritance:
 
-spatial\_stats.raster\_window module
+pyspatialstats.raster\_window module
 ------------------------------------
 
-.. automodule:: spatial_stats.raster_window
+.. automodule:: pyspatialstats.raster_window
    :members:
    :undoc-members:
    :show-inheritance:
 
-spatial\_stats.stat\_helper\_functions module
+pyspatialstats.stat\_helper\_functions module
 ---------------------------------------------
 
-.. automodule:: spatial_stats.stat_helper_functions
+.. automodule:: pyspatialstats.stat_helper_functions
    :members:
    :undoc-members:
    :show-inheritance:
 
-spatial\_stats.types module
+pyspatialstats.types module
 ---------------------------
 
-.. automodule:: spatial_stats.types
+.. automodule:: pyspatialstats.types
    :members:
    :undoc-members:
    :show-inheritance:
 
-spatial\_stats.utils module
+pyspatialstats.utils module
 ---------------------------
 
-.. automodule:: spatial_stats.utils
+.. automodule:: pyspatialstats.utils
    :members:
    :undoc-members:
    :show-inheritance:
 
-spatial\_stats.window module
+pyspatialstats.window module
 ----------------------------
 
-.. automodule:: spatial_stats.window
+.. automodule:: pyspatialstats.window
    :members:
    :undoc-members:
    :show-inheritance:
@@ -66,7 +66,7 @@ spatial\_stats.window module
 Module contents
 ---------------
 
-.. automodule:: spatial_stats
+.. automodule:: pyspatialstats
    :members:
    :undoc-members:
    :show-inheritance:

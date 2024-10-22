@@ -1,21 +1,21 @@
-spatial\_stats.rolling package
+pyspatialstats.rolling package
 ==============================
 
 Submodules
 ----------
 
-spatial\_stats.rolling.rolling\_stats module
+pyspatialstats.rolling.rolling\_stats module
 --------------------------------------------
 
-.. automodule:: spatial_stats.rolling.rolling_stats
+.. automodule:: pyspatialstats.rolling.rolling_stats
    :members:
    :undoc-members:
    :show-inheritance:
 
-spatial\_stats.rolling.rolling\_window module
+pyspatialstats.rolling.rolling\_window module
 ---------------------------------------------
 
-.. automodule:: spatial_stats.rolling.rolling_window
+.. automodule:: pyspatialstats.rolling.rolling_window
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ spatial\_stats.rolling.rolling\_window module
 Module contents
 ---------------
 
-.. automodule:: spatial_stats.rolling
+.. automodule:: pyspatialstats.rolling
    :members:
    :undoc-members:
    :show-inheritance:

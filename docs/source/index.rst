@@ -3,17 +3,17 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-***************************
-Focal statistics for python
-***************************
+*****************************
+Spatial statistics for python
+*****************************
 
 This module aims to provide focal statistics for python, that runs without the installation of extensive GIS packages. It is mainly based on numpy. For more details see the documentation.
 
 The package implements three different categories of spatial statistics:
 
-* focal statistics (:mod:`spatial_stats.focal_stats`), which are calculated as a moving window over input rasters (2D)
-* grouped statistics (:mod:`spatial_stats.grouped_stats`), which calculates the statistics based on strata (xD)
-* strata statistics (:mod:`spatial_stats.strata_stats`), which calculates the statistics for each stratum and reapplies it to the input raster (2D). This depends on the grouped statistics module.
+* focal statistics (:mod:`pyspatialstats.focal_stats`), which are calculated as a moving window over input rasters (2D)
+* grouped statistics (:mod:`pyspatialstats.grouped_stats`), which calculates the statistics based on strata (xD)
+* strata statistics (:mod:`pyspatialstats.strata_stats`), which calculates the statistics for each stratum and reapplies it to the input raster (2D). This depends on the grouped statistics module.
 
 
 *************
@@ -56,7 +56,7 @@ Documentation
 License
 =======
 
-focal_stats is published under a MIT license.
+pyspatialstats is published under a MIT license.
 
 
 Indices and tables

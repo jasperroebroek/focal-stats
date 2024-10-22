@@ -1,21 +1,21 @@
-spatial\_stats.focal\_stats package
+pyspatialstats.focal\_stats package
 ===================================
 
 Submodules
 ----------
 
-spatial\_stats.focal\_stats.focal\_correlation module
+pyspatialstats.focal\_stats.focal\_correlation module
 -----------------------------------------------------
 
-.. automodule:: spatial_stats.focal_stats.focal_correlation
+.. automodule:: pyspatialstats.focal_stats.focal_correlation
    :members:
    :undoc-members:
    :show-inheritance:
 
-spatial\_stats.focal\_stats.focal\_statistics module
+pyspatialstats.focal\_stats.focal\_statistics module
 ----------------------------------------------------
 
-.. automodule:: spatial_stats.focal_stats.focal_statistics
+.. automodule:: pyspatialstats.focal_stats.focal_statistics
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ spatial\_stats.focal\_stats.focal\_statistics module
 Module contents
 ---------------
 
-.. automodule:: spatial_stats.focal_stats
+.. automodule:: pyspatialstats.focal_stats
    :members:
    :undoc-members:
    :show-inheritance:

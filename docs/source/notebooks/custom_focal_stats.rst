@@ -10,8 +10,8 @@ Creating custom focal statistic function
 
 .. code:: python
 
-    import spatial_stats.focal_stats as fs
-    import spatial_stats.rolling as rolling
+    import pyspatialstats.focal_stats as fs
+    import pyspatialstats.rolling as rolling
     import rasterio as rio
     import matplotlib.pyplot as plt
     import numpy as np
@@ -42,7 +42,7 @@ Inspecting the data
 
 .. parsed-literal::
 
-    <matplotlib.colorbar.Colorbar at 0x14d5ea5d0>
+    <matplotlib.colorbar.Colorbar at 0x159932570>
 
 
 
@@ -110,7 +110,7 @@ close to the original raster, with some limited smoothing
 
 .. parsed-literal::
 
-    <matplotlib.colorbar.Colorbar at 0x14d653d40>
+    <matplotlib.colorbar.Colorbar at 0x159a56030>
 
 
 
@@ -138,7 +138,7 @@ Resulting in the same image:
 
 .. parsed-literal::
 
-    <matplotlib.colorbar.Colorbar at 0x14d7ba960>
+    <matplotlib.colorbar.Colorbar at 0x159af7350>
 
 
 

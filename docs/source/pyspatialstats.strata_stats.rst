@@ -1,13 +1,13 @@
-spatial\_stats.strata\_stats package
+pyspatialstats.strata\_stats package
 ====================================
 
 Submodules
 ----------
 
-spatial\_stats.strata\_stats.strata\_stats module
+pyspatialstats.strata\_stats.strata\_stats module
 -------------------------------------------------
 
-.. automodule:: spatial_stats.strata_stats.strata_stats
+.. automodule:: pyspatialstats.strata_stats.strata_stats
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ spatial\_stats.strata\_stats.strata\_stats module
 Module contents
 ---------------
 
-.. automodule:: spatial_stats.strata_stats
+.. automodule:: pyspatialstats.strata_stats
    :members:
    :undoc-members:
    :show-inheritance:
