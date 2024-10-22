@@ -4,7 +4,7 @@ import pytest
 import statsmodels.api as sm
 from scipy.stats import linregress
 
-from spatial_stats.grouped_stats import (
+from pyspatialstats.grouped_stats import (
     grouped_linear_regression,
     grouped_linear_regression_pd,
 )

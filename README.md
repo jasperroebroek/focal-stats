@@ -16,7 +16,7 @@ mechanisms of a rolling window (xD).
 The package can be installed with conda:
 
 ```
-conda install --channel conda-forge focal-stats
+conda install --channel conda-forge pyspatialstats
 ```
 
 # Usage example
@@ -24,7 +24,7 @@ conda install --channel conda-forge focal-stats
 Focal mean of a 100x100 random numpy array.
 
 ```
-from spatial_stats.focal_stats import focal_mean
+from pyspatialstats.focal_stats import focal_mean
 import numpy as np
 
 x = np.random.rand(100, 100)

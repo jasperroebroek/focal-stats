@@ -2,8 +2,8 @@ import numpy as np
 import pytest
 from scipy.stats import linregress, pearsonr
 
-from spatial_stats.strata_stats import strata_min
-from spatial_stats.strata_stats.strata_stats import (
+from pyspatialstats.strata_stats import strata_min
+from pyspatialstats.strata_stats.strata_stats import (
     strata_correlation,
     strata_linear_regression,
     strata_max,

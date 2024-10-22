@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from spatial_stats.grouped_stats import grouped_mean_std_pd, grouped_std, grouped_std_pd
+from pyspatialstats.grouped_stats import grouped_mean_std_pd, grouped_std, grouped_std_pd
 
 rs = np.random.RandomState(0)
 

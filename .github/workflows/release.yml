@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/spatial-stats
+      url: https://pypi.org/p/pyspatialstats
     permissions:
       id-token: write
 

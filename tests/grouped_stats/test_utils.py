@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from numpy.ma.testutils import assert_array_approx_equal
 
-from spatial_stats.grouped_stats import define_max_ind as cy_define_max_ind, generate_index
+from pyspatialstats.grouped_stats import define_max_ind as cy_define_max_ind, generate_index
 
 
 def define_max_ind(ind):

@@ -8,8 +8,8 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "spatial_stats"
-version = "0.0.1"
+name = "pyspatialstats"
+version = "0.0.2"
 description = ""
 authors = [
     { name = "Jasper Roebroek", email = "roebroek.jasper@gmail.com" }

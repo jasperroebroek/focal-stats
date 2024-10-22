@@ -4,8 +4,8 @@ import scipy.stats
 from numpy.ma.testutils import assert_array_almost_equal
 from pydantic import ValidationError
 
-from spatial_stats.focal_stats import focal_majority, focal_max, focal_mean, focal_min, focal_std, focal_sum
-from spatial_stats.rolling import rolling_window
+from pyspatialstats.focal_stats import focal_majority, focal_max, focal_mean, focal_min, focal_std, focal_sum
+from pyspatialstats.rolling import rolling_window
 
 
 def test_focal_stats_values():

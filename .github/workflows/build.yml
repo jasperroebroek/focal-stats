@@ -17,20 +17,20 @@ jobs:
         uses: mamba-org/setup-micromamba@v2
         with:
           init-shell: bash
-          environment-name: focal-stats-env
+          environment-name: pyspatialstats-env
           create-args: >-
             python=3.9
 
       - name: Install cibuildwheel
         shell: bash -l {0}
         run: |
-          micromamba activate focal-stats-env
+          micromamba activate pyspatialstats-env
           python -m pip install cibuildwheel
 
       - name: Build wheels
         shell: bash -l {0}
         run: |
-          micromamba activate focal-stats-env
+          micromamba activate pyspatialstats-env
           python -m cibuildwheel --output-dir wheelhouse
         env:
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.9"

@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from spatial_stats.rolling import rolling_mean, rolling_sum, rolling_window
+from pyspatialstats.rolling import rolling_mean, rolling_sum, rolling_window
 
 
 def test_rolling_int_window_dimensions():

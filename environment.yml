@@ -1,4 +1,4 @@
-name: spatial_stats
+name: pyspatialstats
 channels:
   - defaults
   - conda-forge

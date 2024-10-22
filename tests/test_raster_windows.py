@@ -1,6 +1,6 @@
 import pytest
 
-from spatial_stats.raster_window import RasterWindow, RasterWindowPair, construct_windows
+from pyspatialstats.raster_window import RasterWindow, RasterWindowPair, construct_windows
 
 
 def test_window_definition_errors():
