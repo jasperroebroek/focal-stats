@@ -5,9 +5,9 @@ import pandas as pd
 from numpydantic import NDArray, Shape
 from numpydantic.dtype import Int64
 
-from focal_stats.grouped_stats._grouped_correlation import GroupedCorrelationResult
-from focal_stats.grouped_stats._grouped_count import define_max_ind as cy_define_max_ind
-from focal_stats.grouped_stats._grouped_linear_regression import GroupedLinearRegressionResult
+from spatial_stats.grouped_stats._grouped_correlation import GroupedCorrelationResult
+from spatial_stats.grouped_stats._grouped_count import define_max_ind as cy_define_max_ind
+from spatial_stats.grouped_stats._grouped_linear_regression import GroupedLinearRegressionResult
 
 
 def define_max_ind(ind: NDArray) -> int:
@@ -16,7 +16,7 @@ def define_max_ind(ind: NDArray) -> int:
 
 
 def generate_index(ind: NDArray, v: NDArray) -> NDArray[Shape["*"], Int64]:
-    from focal_stats.grouped_stats import grouped_count
+    from spatial_stats.grouped_stats import grouped_count
 
     return np.argwhere(grouped_count(ind, v)).ravel()
 
