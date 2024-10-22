@@ -7,16 +7,16 @@ API reference
 Focal statistics
 ================
 
-This module provides focal statistics functionality, similar to the focal statistics methods in the ArcGIS software. The various functions in this module accept a 2D array as input data. The sliding window characteristics (dimensions and masking) are provided through the `window` keyword. This accepts either an integer, a boolean mask, or a :class:`focal_stats.window.Window` object. The functions return an array, either of the same dimensions as the input data, or an array of smaller dimensions if the ``reduce`` parameter is used. This allows for a non-overlapping sliding window. :func:`focal_correlation` calculates the correlation between two arrays in contrast to the other functions that operate on a single array.
+This module provides focal statistics functionality, similar to the methods in the ArcGIS software. The various functions in this module accept a 2D array as input data. The sliding window characteristics (dimensions and masking) are provided through the ``window`` keyword. This accepts either an integer, a boolean mask, or a :class:`focal_stats.window.Window` object. The functions return an array, either of the same dimensions as the input data, or an array of smaller dimensions if the ``reduce`` parameter is used. This allows for a non-overlapping sliding window. :func:`focal_correlation` calculates the correlation between two arrays in contrast to the other functions that operate on a single array.
 
 .. autosummary::
     :toctree: generated/focal_statistics
 
-    focal_mean
+    focal_sum
     focal_min
     focal_max
+    focal_mean
     focal_std
-    focal_sum
     focal_majority
     focal_correlation
 
@@ -26,12 +26,12 @@ Grouped statistics
 
 .. currentmodule:: grouped_stats
 
-This module provides functions that calculate statistics based on strata, allowing for data of any dimensionality. To use these functions, you must provide a strata array `ind` with the same shape as the data. Note that an index value of 0 indicates that the corresponding data point should be skipped.
+This module provides functions that calculate statistics based on strata, allowing for data of any dimensionality. To use these functions, you must provide an array ``ind`` with the same shape as the data, which represent the strata index. Note that an index value of 0 indicates that the corresponding data point should be skipped.
 
 For each statistic, two functions are available:
 
 #. Array-based output: Returns a NumPy array where each index corresponds to the stratum.
-#. DataFrame-based output: Returns a Pandas DataFrame where the index only includes the actual strata, and the calculated statistic values are stored in the columns."
+#. DataFrame-based output: Returns a Pandas DataFrame where the index only includes the actual strata, and the calculated statistic values are stored in the columns.
 
 .. autosummary::
     :toctree: generated/grouped_stats
@@ -78,7 +78,7 @@ Rolling functions
 
 .. currentmodule:: rolling
 
-This module provides rolling functions that can process ND arrays. These functions are using the same sliding window approach as the focal statistics through the `window` parameter. However, they do not specifically account for NaN values, matching instead to the default behavior of NumPy. Designed for flexibility, these functions are meant to construct custom focal statistics methods, even in dimensions higher than 2D. These methods are similar to the :func:`numpy.lib.stride_tricks.sliding_window_view` function.
+This module provides rolling functions that can process ND arrays. These functions are using the same sliding window approach as the focal statistics through the ``window`` parameter. However, they do not specifically account for NaN values, matching the default behavior of NumPy. Designed for flexibility, these functions are meant to construct custom focal statistics methods in any dimensionality. These methods are similar to the :func:`numpy.lib.stride_tricks.sliding_window_view` function.
 
 .. autosummary::
     :toctree: generated/rolling
@@ -86,6 +86,7 @@ This module provides rolling functions that can process ND arrays. These functio
     rolling_window
     rolling_sum
     rolling_mean
+
 
 Windows
 =======

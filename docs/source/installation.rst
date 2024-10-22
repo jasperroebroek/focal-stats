@@ -5,6 +5,10 @@ Required dependencies
 ---------------------
 
 - `numpy <http://www.numpy.org/>`__
+- `pandas`
+- `joblib`
+- `numpydantic`
+
 
 Instructions
 ------------

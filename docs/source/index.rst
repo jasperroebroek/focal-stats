@@ -15,8 +15,6 @@ The package implements three different categories of spatial statistics:
 * grouped statistics (:mod:`grouped_stats`), which calculates the statistics based on strata (xD)
 * strata statistics (:mod:`strata_stats`), which calculates the statistics for each stratum and reapplies it to the input raster (2D). This depends on the grouped statistics module.
 
-focal statistics functions (see Tutorials). This is implemented in line with
-:func:`numpy.lib.stride_tricks.sliding_window_view`, but extends its functionality.
 
 *************
 Documentation

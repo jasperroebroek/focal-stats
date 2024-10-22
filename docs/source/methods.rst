@@ -20,4 +20,4 @@ The second example shows what the same example looks like when a complete raster
 Grouped/strata statistics
 =========================
 
-Grouped statistics are statistics calculated on groups of pixels defined by a stratum (:mod:``grouped_stats``). In this package they are defined in any dimension. The calculated values can be reapplied on an output with the same dimensions as the input. For 2D raster data this is available in the :mod:``strata_stats`` moduls.
+Grouped statistics are statistics calculated on groups of pixels defined by a stratum (:mod:`grouped_stats`). In this package they are defined in any dimension. The calculated values can be reapplied on an output with the same dimensions as the input. For 2D raster data this is available in the :mod:`strata_stats` module.

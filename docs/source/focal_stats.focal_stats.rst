@@ -20,13 +20,6 @@ focal\_stats.focal\_stats.focal\_statistics module
    :undoc-members:
    :show-inheritance:
 
-focal\_stats.focal\_stats.iteration\_params module
---------------------------------------------------
-
-.. automodule:: focal_stats.focal_stats.iteration_params
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 Module contents
 ---------------

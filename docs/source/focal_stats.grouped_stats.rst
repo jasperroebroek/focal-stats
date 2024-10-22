@@ -12,13 +12,6 @@ focal\_stats.grouped\_stats.grouped\_stats module
    :undoc-members:
    :show-inheritance:
 
-focal\_stats.grouped\_stats.utils module
-----------------------------------------
-
-.. automodule:: focal_stats.grouped_stats.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 Module contents
 ---------------

@@ -17,9 +17,9 @@ import sys  # NOQA
 import warnings
 from pathlib import Path
 from subprocess import call
-sys.path.insert(0, os.path.abspath('../../focal_stats'))
-sys.path.insert(0, os.path.abspath('../..'))
-sys.path.insert(0, os.path.abspath('.'))
+# sys.path.insert(0, os.path.abspath('../../focal_stats'))
+# sys.path.insert(0, os.path.abspath('../..'))
+# sys.path.insert(0, os.path.abspath('.'))
 
 # -- Project information -----------------------------------------------------
 
