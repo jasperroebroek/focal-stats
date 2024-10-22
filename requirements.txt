@@ -1,0 +1,14 @@
+numpy
+cython
+pytest
+sphinx
+sphinx_rtd_theme
+numpydoc
+scipy
+jupyter
+matplotlib
+joblib
+numpydantic
+pydantic
+setuptools
+rasterio
